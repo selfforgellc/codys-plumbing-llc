@@ -1,0 +1,157 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme {
+  --font-heading: 'Montserrat', system-ui, -apple-system, sans-serif;
+  --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  
+  --color-brand-cyan: #00d2ff;
+  --color-brand-blue: #0072ff;
+  --color-brand-deep: #051329;
+  --color-brand-chrome: #e2e8f0;
+  --color-brand-dark: #070d18;
+}
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+}
+
+:root {
+  --primary: #0088ff;
+  --primary-foreground: #ffffff;
+  --radius: 0.65rem;
+  --background: #070d18;
+  --foreground: #f1f5f9;
+  --card: #0c1626;
+  --card-foreground: #f8fafc;
+  --popover: #0c1626;
+  --popover-foreground: #f8fafc;
+  --secondary: #16243b;
+  --secondary-foreground: #e2e8f0;
+  --muted: #111e33;
+  --muted-foreground: #94a3b8;
+  --accent: #00d2ff;
+  --accent-foreground: #020617;
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+  --border: #1e293b;
+  --input: #1e293b;
+  --ring: #00d2ff;
+}
+
+.dark {
+  --primary: #0088ff;
+  --primary-foreground: #ffffff;
+  --background: #070d18;
+  --foreground: #f1f5f9;
+  --card: #0c1626;
+  --card-foreground: #f8fafc;
+  --popover: #0c1626;
+  --popover-foreground: #f8fafc;
+  --secondary: #16243b;
+  --secondary-foreground: #e2e8f0;
+  --muted: #111e33;
+  --muted-foreground: #94a3b8;
+  --accent: #00d2ff;
+  --accent-foreground: #020617;
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+  --border: #1e293b;
+  --input: #1e293b;
+  --ring: #00d2ff;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family: var(--font-sans);
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading);
+  }
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]),
+  [type="button"]:not(:disabled),
+  [type="submit"]:not(:disabled),
+  [type="reset"]:not(:disabled),
+  a[href],
+  select:not(:disabled),
+  input[type="checkbox"]:not(:disabled),
+  input[type="radio"]:not(:disabled) {
+    @apply cursor-pointer;
+  }
+}
+
+/* Chrome metallic reflections & plumbing pipe aesthetics */
+.chrome-gradient {
+  background: linear-gradient(135deg, #f8fafc 0%, #cbd5e1 25%, #94a3b8 50%, #f1f5f9 75%, #64748b 100%);
+}
+
+.chrome-text {
+  background: linear-gradient(135deg, #ffffff 0%, #cbd5e1 40%, #94a3b8 60%, #ffffff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.cyan-glow {
+  box-shadow: 0 0 25px rgba(0, 210, 255, 0.35);
+}
+
+.cyan-text-glow {
+  text-shadow: 0 0 15px rgba(0, 210, 255, 0.6);
+}
+
+.glass-panel {
+  background: rgba(12, 22, 38, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(56, 189, 248, 0.2);
+}
+
+.glass-panel-hover {
+  transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+}
+.glass-panel-hover:hover {
+  background: rgba(16, 29, 49, 0.95);
+  border-color: rgba(0, 210, 255, 0.45);
+  transform: translateY(-3px);
+  box-shadow: 0 12px 30px -8px rgba(0, 210, 255, 0.25);
+}
+
+/* Pulsing emergency beacon */
+@keyframes beacon-pulse {
+  0% { transform: scale(0.95); opacity: 0.8; }
+  50% { transform: scale(1.05); opacity: 1; }
+  100% { transform: scale(0.95); opacity: 0.8; }
+}
+
+.animate-beacon {
+  animation: beacon-pulse 2s infinite ease-in-out;
+}
