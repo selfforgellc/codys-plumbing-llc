@@ -1,0 +1,27 @@
+{
+  "added": [
+    "DEPLOYMENT.md",
+    "api/_lib.ts",
+    "api/admin/login.ts",
+    "api/admin/logout.ts",
+    "api/push/config.ts",
+    "api/push/subscribe.ts",
+    "api/requests.ts",
+    "api/requests/[id].ts",
+    "client/public/manifest.webmanifest",
+    "client/public/sw.js",
+    "client/src/pages/AdminDashboard.tsx",
+    "scripts/test-dispatch.mjs",
+    "supabase/schema.sql"
+  ],
+  "changed": [
+    "client/index.html",
+    "client/src/App.tsx",
+    "client/src/components/BookingModal.tsx",
+    "package-lock.json",
+    "package.json",
+    "pnpm-lock.yaml",
+    "tsconfig.json"
+  ],
+  "removed": []
+}
