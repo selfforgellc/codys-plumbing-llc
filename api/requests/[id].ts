@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { adminRequired, json, setCors, supabaseAdmin, type RequestStatus } from "../_lib";
+import { adminRequired, json, setCors, supabaseAdmin, type RequestStatus } from "../_lib.js";
 
 const statuses: RequestStatus[] = ["New", "Contacted", "Scheduled", "In Progress", "Completed", "Cancelled"];
 
