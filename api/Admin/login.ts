@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { createAdminCookie, json, readJson, setCors } from "../_lib";
+import { createAdminCookie, json, readJson, setCors } from "../_lib.js";
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   setCors(res);
