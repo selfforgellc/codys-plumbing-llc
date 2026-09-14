@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { json, setCors } from "../_lib";
+import { json, setCors } from "../_lib.js";
 
 export default function handler(req: VercelRequest, res: VercelResponse) {
   setCors(res);
