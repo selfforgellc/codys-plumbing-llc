@@ -1,0 +1,52 @@
+name: Supabase Keep Alive
+
+on:
+  schedule:
+    # Daily at 15:00 UTC. Scheduled workflows run from the default branch.
+    - cron: "0 15 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  keep-alive:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Check Supabase database activity
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if [[ -z "${SUPABASE_URL:-}" || -z "${SUPABASE_SERVICE_ROLE_KEY:-}" ]]; then
+            echo "::error::Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY repository secrets."
+            exit 1
+          fi
+
+          base_url="${SUPABASE_URL%/}"
+          echo "Checking Supabase REST API and service_requests table..."
+
+          http_code="$(curl --silent --show-error --fail-with-body \
+            --output /tmp/supabase-response.json \
+            --write-out "%{http_code}" \
+            --max-time 25 \
+            --retry 2 \
+            --retry-delay 3 \
+            --get "${base_url}/rest/v1/service_requests" \
+            --data-urlencode "select=id" \
+            --data-urlencode "limit=1" \
+            --header "apikey: ${SUPABASE_SERVICE_ROLE_KEY}" \
+            --header "Authorization: Bearer ${SUPABASE_SERVICE_ROLE_KEY}" \
+            --header "Accept: application/json")"
+
+          if [[ "${http_code}" != "200" ]]; then
+            echo "::error::Supabase health check returned HTTP ${http_code}."
+            cat /tmp/supabase-response.json
+            exit 1
+          fi
+
+          echo "Supabase is responding and service_requests is queryable (HTTP 200)."
