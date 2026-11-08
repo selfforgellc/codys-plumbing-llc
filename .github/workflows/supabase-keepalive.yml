@@ -30,7 +30,7 @@ jobs:
           base_url="${SUPABASE_URL%/}"
           echo "Checking Supabase REST API and service_requests table..."
 
-          http_code="$(curl --silent --show-error --fail-with-body \
+          http_code="$(curl --silent --show-error \
             --output /tmp/supabase-response.json \
             --write-out "%{http_code}" \
             --max-time 25 \
