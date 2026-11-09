@@ -121,6 +121,9 @@ export default function Home() {
 
       <footer className="border-t border-slate-800 py-6 text-center text-xs text-slate-500">
         © {new Date().getFullYear()} Cody's Plumbing, LLC · {COMPANY.address} · AZ ROC #{COMPANY.rocPrimary}
+        <a href="/admin" className="mx-auto mt-2 block w-fit rounded px-2 py-1 font-semibold text-slate-400 hover:text-cyan-300 focus-visible:outline-2 focus-visible:outline-cyan-400">
+          Dispatch sign-in
+        </a>
       </footer>
 
       <BookingModal isOpen={bookingOpen} onClose={() => setBookingOpen(false)} initialService={service} />
