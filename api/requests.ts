@@ -20,7 +20,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return json(res, 201, { request: data });
     }
     if (req.method === "GET") {
-      if (!adminRequired(req, res)) return;
+      if (!(await adminRequired(req, res))) return;
       const { data, error } = await db.from("service_requests").select("*").order("created_at", { ascending: false });
       if (error) throw error;
       return json(res, 200, { requests: data || [] });
@@ -32,3 +32,4 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return json(res, 500, { error: "Unable to process request" });
   }
 }
+

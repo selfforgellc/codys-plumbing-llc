@@ -33,9 +33,14 @@ export function json(res: ServerResponse, status: number, body: unknown) {
   res.end(JSON.stringify(body));
 }
 
-export async function readJson(req: IncomingMessage) {
+export async function readJson(req: IncomingMessage, maxBytes = Infinity) {
   let body = "";
-  for await (const chunk of req) body += chunk;
+  let bytes = 0;
+  for await (const chunk of req) {
+    bytes += Buffer.byteLength(chunk);
+    if (bytes > maxBytes) throw new Error("Request body too large");
+    body += chunk;
+  }
   if (!body) return {};
   return JSON.parse(body);
 }
@@ -71,8 +76,59 @@ export function isAdmin(req: IncomingMessage) {
   return value === "cody-admin" && Boolean(sig) && sig.length === expected.length && crypto.timingSafeEqual(Buffer.from(sig), Buffer.from(expected));
 }
 
-export function adminRequired(req: IncomingMessage, res: ServerResponse) {
-  if (isAdmin(req)) return true;
+export function dispatchAccountsEnabled() {
+  return process.env.DISPATCH_ACCOUNTS_MODE === "setup" || process.env.DISPATCH_ACCOUNTS_MODE === "enabled";
+}
+
+export function dispatchLegacyLoginEnabled() {
+  return process.env.DISPATCH_ACCOUNTS_MODE !== "enabled";
+}
+
+export function dispatchHash(value: string) {
+  return crypto.createHash("sha256").update(value).digest("hex");
+}
+
+export function dispatchSession(req: IncomingMessage) {
+  return /(?:^|;\s*)cody_dispatch=([A-Za-z0-9_-]{43})(?=;|$)/.exec(req.headers.cookie || "")?.[1];
+}
+
+export function dispatchCookie(token: string, remember?: boolean) {
+  const age = !token ? "; Max-Age=0" : remember ? "; Max-Age=2592000" : "";
+  return `cody_dispatch=${token}; Path=/; HttpOnly; Secure; SameSite=Strict${age}`;
+}
+
+export async function dispatchAccountAction(action: string, args: {
+  username?: string; credential?: string; password?: string; token?: string;
+  remember?: boolean; recoveryHashes?: string[];
+} = {}) {
+  const { data, error } = await supabaseAdmin().rpc("dispatch_account_action", {
+    action, account_name: args.username ?? null, credential: args.credential ?? null,
+    new_password: args.password ?? null, session_hash: args.token ? dispatchHash(args.token) : null,
+    remember_device: args.remember ?? false, new_recovery_hashes: args.recoveryHashes ?? null,
+  });
+  if (error) throw new Error("Dispatch account service unavailable");
+  return data;
+}
+
+export function dispatchSameOrigin(req: IncomingMessage) {
+  return Boolean(req.headers.host && req.headers.origin === `https://${req.headers.host}`);
+}
+
+export async function adminRequired(req: IncomingMessage, res: ServerResponse) {
+  if (dispatchAccountsEnabled()) {
+    if (req.method !== "GET" && !dispatchSameOrigin(req)) {
+      json(res, 403, { error: "Forbidden" });
+      return false;
+    }
+    const token = dispatchSession(req);
+    try {
+      if (token && ["cody", "anthony"].includes(await dispatchAccountAction("session", { token }))) return true;
+    } catch {
+      json(res, 503, { error: "Dispatch sign-in is temporarily unavailable" });
+      return false;
+    }
+  }
+  if (dispatchLegacyLoginEnabled() && isAdmin(req)) return true;
   json(res, 401, { error: "Unauthorized" });
   return false;
 }
@@ -150,3 +206,4 @@ export function validateRequest(input: any) {
   }
   return null;
 }
+

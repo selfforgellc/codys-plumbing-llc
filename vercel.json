@@ -1,4 +1,9 @@
 {
+  "git": {
+    "deploymentEnabled": {
+      "dispatch/named-admin-accounts": false
+    }
+  },
   "rewrites": [
     {
       "source": "/((?!api/|assets/|.*\\..*).*)",
