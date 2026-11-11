@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { adminRole, codyPasswordHash, createAdminCookie, dispatchSameOrigin, json, readJson, sameSecret, supabaseAdmin } from "../_lib.js";
+import { adminRole, codyPasswordHash, createAdminCookie, dispatchSameOrigin, json, readJson, rememberedAdminDevice, sameSecret, supabaseAdmin } from "../_lib.js";
 import { hashPassword, matchesCodyPassword } from "./_password.js";
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
@@ -34,7 +34,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (error) throw error;
     if (!data) return json(res, 409, { error: "The password changed. Sign in again and retry." });
 
-    res.setHeader("Set-Cookie", createAdminCookie("cody", passwordHash));
+    res.setHeader("Set-Cookie", createAdminCookie("cody", passwordHash, rememberedAdminDevice(req)));
     return json(res, 200, { ok: true });
   } catch {
     return json(res, 503, { error: "Could not change the password. Try again." });

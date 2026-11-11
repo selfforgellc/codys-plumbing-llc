@@ -53,7 +53,8 @@ export function setCors(res: ServerResponse) {
   res.setHeader("Access-Control-Allow-Methods", "GET, POST, PATCH, DELETE, OPTIONS");
 }
 
-const adminSessionAge = 604800;
+const rememberedSessionAge = 30 * 24 * 60 * 60;
+const browserSessionAge = 12 * 60 * 60;
 type AdminRole = "cody" | "anthony";
 
 export function sameSecret(first: string, second: string) {
@@ -72,23 +73,28 @@ function adminSignature(value: string, key: string) {
   return crypto.createHmac("sha256", key).update(value).digest("hex");
 }
 
-export function createAdminCookie(role: AdminRole, key: string) {
-  const value = `${role}.${Math.floor(Date.now() / 1000) + adminSessionAge}`;
-  return `cody_admin=${value}.${adminSignature(value, key)}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=${adminSessionAge}`;
+export function createAdminCookie(role: AdminRole, key: string, remember = false) {
+  const age = remember ? rememberedSessionAge : browserSessionAge;
+  const value = `${role}.${Math.floor(Date.now() / 1000) + age}${remember ? ".remember" : ""}`;
+  return `cody_admin=${value}.${adminSignature(value, key)}; Path=/; HttpOnly; Secure; SameSite=Lax${remember ? `; Max-Age=${age}` : ""}`;
+}
+
+export function rememberedAdminDevice(req: IncomingMessage) {
+  return /(?:^|;\s*)cody_admin=cody\.\d+\.remember\.[a-f0-9]{64}(?=;|$)/.test(req.headers.cookie || "");
 }
 
 export async function adminRole(req: IncomingMessage): Promise<AdminRole | null> {
   const token = /(?:^|;\s*)cody_admin=([^;]+)/.exec(req.headers.cookie || "")?.[1];
   if (!token) return null;
 
-  const parts = /^(cody|anthony)\.(\d+)\.([a-f0-9]{64})$/.exec(token);
+  const parts = /^(cody|anthony)\.(\d+)(\.remember)?\.([a-f0-9]{64})$/.exec(token);
   if (parts) {
-    const [, role, expires, signature] = parts;
+    const [, role, expires, remember, signature] = parts;
     if (Number(expires) <= Math.floor(Date.now() / 1000)) return null;
     const key = role === "anthony"
       ? process.env.DISPATCH_ACCESS_CODE
       : await codyPasswordHash() ?? process.env.ADMIN_PASSWORD;
-    return key && sameSecret(signature, adminSignature(`${role}.${expires}`, key)) ? role as AdminRole : null;
+    return key && sameSecret(signature, adminSignature(`${role}.${expires}${remember ?? ""}`, key)) ? role as AdminRole : null;
   }
 
   const initialPassword = process.env.ADMIN_PASSWORD;
