@@ -12,15 +12,25 @@ export default function AdminDashboard() {
   const [authed, setAuthed] = useState(false);
   const [canChangePassword, setCanChangePassword] = useState(false);
   const [changingPassword, setChangingPassword] = useState(false);
+  const [recoveringPassword, setRecoveringPassword] = useState(false);
+  const [showResetCode, setShowResetCode] = useState(false);
+  const [canIssueResetCode, setCanIssueResetCode] = useState(false);
+  const [remember, setRemember] = useState(false);
 
   useEffect(() => {
     if (!authed) {
       setCanChangePassword(false);
+      setCanIssueResetCode(false);
       return;
     }
     const controller = new AbortController();
     fetch("/api/admin/login", { signal: controller.signal })
-      .then(async (response) => setCanChangePassword(response.ok && (await response.json()).canChangePassword === true))
+      .then(async (response) => {
+        if (!response.ok) return;
+        const permissions = await response.json();
+        setCanChangePassword(permissions.canChangePassword === true);
+        setCanIssueResetCode(permissions.canIssueResetCode === true);
+      })
       .catch(() => {});
     return () => controller.abort();
   }, [authed]);
@@ -49,7 +59,7 @@ export default function AdminDashboard() {
       const response = await fetch("/api/admin/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ password }),
+        body: JSON.stringify({ password, remember }),
       });
       if (!response.ok) {
         toast.error((await response.json()).error || "Could not sign in.");
@@ -116,15 +126,64 @@ export default function AdminDashboard() {
 
   const counts = useMemo(() => statuses.reduce((acc, status) => ({ ...acc, [status]: requests.filter((request) => request.status === status).length }), {} as Record<Status, number>), [requests]);
 
-  if (!authed) return <main className="min-h-screen bg-slate-950 px-4 py-16 text-slate-100"><div className="mx-auto max-w-md rounded-2xl border border-cyan-500/30 bg-slate-900 p-8 shadow-2xl"><ShieldCheck className="h-10 w-10 text-cyan-400" /><h1 className="mt-4 text-3xl font-black font-heading">Cody's Dispatch</h1><p className="mt-2 text-sm text-slate-400">Protected admin dashboard</p><form onSubmit={login} className="mt-6 space-y-4"><input autoFocus required type="password" value={password} onChange={(e) => setPassword(e.target.value)} autoComplete="current-password" aria-label="Password or access code" placeholder="Password or access code" className="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-3 text-white focus:border-cyan-400 focus:outline-none" /><button disabled={loginLoading} className="w-full rounded-lg bg-cyan-500 px-4 py-3 font-black text-slate-950 disabled:opacity-60">{loginLoading ? "Signing in..." : "Open dashboard"}</button></form><a href="/" className="mt-5 block text-center text-xs text-cyan-300">Back to website</a></div></main>;
+  if (!authed && recoveringPassword) {
+    return <ChangeDispatchPassword recovering onClose={() => setRecoveringPassword(false)} />;
+  }
+
+  if (authed && showResetCode && canIssueResetCode) {
+    return <DispatchResetCode onClose={() => setShowResetCode(false)} />;
+  }
+
+  if (!authed) {
+    return (
+      <main className="min-h-screen bg-slate-950 px-4 py-16 text-slate-100">
+        <div className="mx-auto max-w-md rounded-2xl border border-cyan-500/30 bg-slate-900 p-8 shadow-2xl">
+          <ShieldCheck className="h-10 w-10 text-cyan-400" />
+          <h1 className="mt-4 text-3xl font-black font-heading">Cody’s Dispatch</h1>
+          <p className="mt-2 text-sm text-slate-400">Protected admin dashboard</p>
+          <form onSubmit={login} className="mt-6 space-y-4">
+            <input hidden name="username" autoComplete="username" value="dispatch" readOnly />
+            <input
+              autoFocus
+              required
+              name="password"
+              type="password"
+              autoComplete="current-password"
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
+              aria-label="Password or access code"
+              placeholder="Password or access code"
+              className="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-3 text-white focus:border-cyan-400 focus:outline-none"
+            />
+            <label className="flex items-center gap-2 text-sm">
+              <input type="checkbox" checked={remember} onChange={(event) => setRemember(event.target.checked)} />
+              Remember this device for 30 days
+            </label>
+            <button disabled={loginLoading} className="w-full rounded-lg bg-cyan-500 px-4 py-3 font-black text-slate-950 disabled:opacity-60">
+              {loginLoading ? "Signing in..." : "Open dashboard"}
+            </button>
+            <button type="button" onClick={() => {
+              setPassword("");
+              setRecoveringPassword(true);
+            }} className="block text-sm text-cyan-300">
+              Forgot password?
+            </button>
+          </form>
+          <a href="/" className="mt-5 block text-center text-xs text-cyan-300">Back to website</a>
+        </div>
+      </main>
+    );
+  }
 
   if (changingPassword && canChangePassword) {
     return <ChangeDispatchPassword onClose={() => setChangingPassword(false)} />;
   }
 
-  return <main className="min-h-screen bg-slate-950 text-slate-100"><header className="border-b border-slate-800 bg-slate-900/90"><div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-5"><div><p className="text-xs font-bold uppercase tracking-widest text-cyan-400">Cody's Plumbing</p><h1 className="text-2xl font-black font-heading">Dispatch dashboard</h1></div><div className="flex flex-wrap justify-end gap-2">{canChangePassword && (
+  return <main className="min-h-screen bg-slate-950 text-slate-100"><header className="border-b border-slate-800 bg-slate-900/90"><div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-5"><div><p className="text-xs font-bold uppercase tracking-widest text-cyan-400">Cody's Plumbing</p><h1 className="text-2xl font-black font-heading">Dispatch dashboard</h1></div><div className="flex flex-wrap justify-end gap-2">{canIssueResetCode && (
+    <button onClick={() => setShowResetCode(true)} className="rounded-lg border border-slate-700 px-3 py-2 text-xs font-bold">Cody’s password reset</button>
+  )}{canChangePassword && (
     <button onClick={() => setChangingPassword(true)} className="rounded-lg border border-slate-700 px-3 py-2 text-xs font-bold">Change password</button>
-  )}<button onClick={enableNotifications} disabled={notifications === "enabling"} className="flex items-center gap-2 rounded-lg border border-cyan-500/40 px-3 py-2 text-xs font-bold text-cyan-300 hover:bg-cyan-500/10"><Bell className="h-4 w-4" />{notifications === "enabling" ? "Enabling…" : notifications === "enabled" ? "Notifications on" : "Enable notifications"}</button><button onClick={async () => { await fetch("/api/admin/logout", { method: "POST" }); setAuthed(false); }} className="flex items-center gap-2 rounded-lg border border-slate-700 px-3 py-2 text-xs font-bold text-slate-300 hover:bg-slate-800"><LogOut className="h-4 w-4" />Sign out</button></div></div></header><div className="mx-auto max-w-7xl px-4 py-8"><div className="mb-6 grid grid-cols-2 gap-3 md:grid-cols-6">{statuses.map((status) => <div key={status} className="rounded-xl border border-slate-800 bg-slate-900 p-3"><div className="text-xs text-slate-400">{status}</div><div className="mt-1 text-2xl font-black">{counts[status]}</div></div>)}</div><div className="mb-5 flex items-center justify-between"><div><h2 className="text-xl font-black font-heading">Service requests</h2><p className="text-sm text-slate-400">{requests.length} total request{requests.length === 1 ? "" : "s"}</p></div><button onClick={load} disabled={loading || deletingIds.size > 0} className="flex items-center gap-2 rounded-lg border border-slate-700 px-3 py-2 text-xs font-bold hover:bg-slate-800 disabled:opacity-60"><RefreshCw className="h-4 w-4" />Refresh</button></div>{loading ? <div className="rounded-xl border border-slate-800 bg-slate-900 p-8 text-center text-slate-400">Loading requests...</div> : requests.length === 0 ? <div className="rounded-xl border border-dashed border-slate-700 bg-slate-900/60 p-12 text-center text-slate-400">No service requests yet.</div> : <div className="space-y-4">{requests.map((request) => <article id={request.id} key={request.id} className={`rounded-2xl border bg-slate-900 p-5 ${request.id === focusId ? "border-cyan-400 ring-2 ring-cyan-400/30" : "border-slate-800"}`}><div className="flex flex-col justify-between gap-4 lg:flex-row"><div><div className="flex flex-wrap items-center gap-2"><span className={`rounded-full px-2 py-1 text-[10px] font-black uppercase ${request.is_emergency ? "bg-red-500/20 text-red-300" : "bg-cyan-500/10 text-cyan-300"}`}>{request.is_emergency ? "Emergency" : "Standard"}</span><span className="text-xs text-slate-500">{new Date(request.created_at).toLocaleString()}</span></div><h3 className="mt-2 text-xl font-black">{request.name}</h3><p className="mt-1 text-sm text-cyan-300">{request.service_type}</p></div>
+  )}<button onClick={enableNotifications} disabled={notifications === "enabling"} className="flex items-center gap-2 rounded-lg border border-cyan-500/40 px-3 py-2 text-xs font-bold text-cyan-300 hover:bg-cyan-500/10"><Bell className="h-4 w-4" />{notifications === "enabling" ? "Enabling…" : notifications === "enabled" ? "Notifications on" : "Enable notifications"}</button><button onClick={async () => { const response = await fetch("/api/admin/logout", { method: "POST" }); if (response.ok) { setRemember(false); setAuthed(false); } else toast.error("Could not sign out. Try again."); }} className="flex items-center gap-2 rounded-lg border border-slate-700 px-3 py-2 text-xs font-bold text-slate-300 hover:bg-slate-800"><LogOut className="h-4 w-4" />Sign out</button></div></div></header><div className="mx-auto max-w-7xl px-4 py-8"><div className="mb-6 grid grid-cols-2 gap-3 md:grid-cols-6">{statuses.map((status) => <div key={status} className="rounded-xl border border-slate-800 bg-slate-900 p-3"><div className="text-xs text-slate-400">{status}</div><div className="mt-1 text-2xl font-black">{counts[status]}</div></div>)}</div><div className="mb-5 flex items-center justify-between"><div><h2 className="text-xl font-black font-heading">Service requests</h2><p className="text-sm text-slate-400">{requests.length} total request{requests.length === 1 ? "" : "s"}</p></div><button onClick={load} disabled={loading || deletingIds.size > 0} className="flex items-center gap-2 rounded-lg border border-slate-700 px-3 py-2 text-xs font-bold hover:bg-slate-800 disabled:opacity-60"><RefreshCw className="h-4 w-4" />Refresh</button></div>{loading ? <div className="rounded-xl border border-slate-800 bg-slate-900 p-8 text-center text-slate-400">Loading requests...</div> : requests.length === 0 ? <div className="rounded-xl border border-dashed border-slate-700 bg-slate-900/60 p-12 text-center text-slate-400">No service requests yet.</div> : <div className="space-y-4">{requests.map((request) => <article id={request.id} key={request.id} className={`rounded-2xl border bg-slate-900 p-5 ${request.id === focusId ? "border-cyan-400 ring-2 ring-cyan-400/30" : "border-slate-800"}`}><div className="flex flex-col justify-between gap-4 lg:flex-row"><div><div className="flex flex-wrap items-center gap-2"><span className={`rounded-full px-2 py-1 text-[10px] font-black uppercase ${request.is_emergency ? "bg-red-500/20 text-red-300" : "bg-cyan-500/10 text-cyan-300"}`}>{request.is_emergency ? "Emergency" : "Standard"}</span><span className="text-xs text-slate-500">{new Date(request.created_at).toLocaleString()}</span></div><h3 className="mt-2 text-xl font-black">{request.name}</h3><p className="mt-1 text-sm text-cyan-300">{request.service_type}</p></div>
     <div className="flex items-start gap-2">
       <select value={request.status} disabled={deletingIds.has(request.id)} onChange={(e) => updateStatus(request.id, e.target.value as Status)} className="h-fit min-w-0 flex-1 rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm font-bold text-white disabled:opacity-60 lg:flex-none">
         {statuses.map((status) => <option key={status}>{status}</option>)}
@@ -144,7 +203,7 @@ export default function AdminDashboard() {
 
 
 
-function ChangeDispatchPassword({ onClose }: { onClose: () => void }) {
+function ChangeDispatchPassword({ onClose, recovering = false }: { onClose: () => void; recovering?: boolean }) {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
@@ -161,16 +220,18 @@ function ChangeDispatchPassword({ onClose }: { onClose: () => void }) {
     setSaving(true);
     setError("");
     try {
-      const response = await fetch("/api/admin/password", {
+      const response = await fetch(recovering ? "/api/admin/recovery" : "/api/admin/password", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ currentPassword, newPassword }),
+        body: JSON.stringify(recovering
+          ? { action: "reset", code: fields.get("code"), newPassword }
+          : { currentPassword, newPassword }),
       });
       if (!response.ok) {
         setError((await response.json()).error || "Could not change the password.");
         return;
       }
-      toast.success("Password changed.");
+      toast.success(recovering ? "Password reset. Sign in with your new password." : "Password changed.");
       onClose();
     } catch {
       setError("Could not change the password. Try again.");
@@ -183,11 +244,18 @@ function ChangeDispatchPassword({ onClose }: { onClose: () => void }) {
   return (
     <main className="min-h-screen bg-slate-950 px-4 py-16 text-slate-100">
       <div className="mx-auto max-w-md rounded-2xl border border-cyan-500/30 bg-slate-900 p-8">
-        <h1 className="text-2xl font-black font-heading">Change password</h1>
+        <h1 className="text-2xl font-black font-heading">{recovering ? "Reset password" : "Change password"}</h1>
+        {recovering && <p className="mt-2 text-sm text-slate-300">Ask Anthony for a one-time reset code.</p>}
         <form onSubmit={submit} className="mt-6 space-y-4">
-          <label className="block text-sm">Current password
-            <input name="currentPassword" type="password" autoComplete="current-password" required className={inputClass} />
-          </label>
+          {recovering ? (
+            <label className="block text-sm">Reset code
+              <input name="code" required autoCapitalize="none" autoCorrect="off" spellCheck={false} className={inputClass} />
+            </label>
+          ) : (
+            <label className="block text-sm">Current password
+              <input name="currentPassword" type="password" autoComplete="current-password" required className={inputClass} />
+            </label>
+          )}
           <label className="block text-sm">New password (at least 12 characters)
             <input name="newPassword" type="password" autoComplete="new-password" required minLength={12} maxLength={128} className={inputClass} />
           </label>
@@ -202,6 +270,60 @@ function ChangeDispatchPassword({ onClose }: { onClose: () => void }) {
             <button type="button" onClick={onClose} disabled={saving} className="px-3 py-2 text-sm text-cyan-300">Cancel</button>
           </div>
         </form>
+      </div>
+    </main>
+  );
+}
+
+
+function DispatchResetCode({ onClose }: { onClose: () => void }) {
+  const [code, setCode] = useState("");
+  const [generating, setGenerating] = useState(false);
+  const [error, setError] = useState("");
+
+  async function generate() {
+    setGenerating(true);
+    setError("");
+    try {
+      const response = await fetch("/api/admin/recovery", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "issue" }),
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error);
+      setCode(data.code);
+    } catch {
+      setError("Could not generate a reset code. Try again.");
+    } finally {
+      setGenerating(false);
+    }
+  }
+
+  return (
+    <main className="min-h-screen bg-slate-950 px-4 py-16 text-slate-100">
+      <div className="mx-auto max-w-md space-y-4 rounded-2xl border border-cyan-500/30 bg-slate-900 p-8">
+        <h1 className="text-2xl font-black font-heading">Cody’s password reset</h1>
+        <p className="text-sm text-slate-300">Give the code to Cody privately. It expires in 30 minutes and works once.</p>
+        {code ? (
+          <div className="flex flex-wrap items-center gap-3">
+            <code className="select-all rounded-lg bg-slate-950 px-3 py-2">{code}</code>
+            <button type="button" className="text-sm text-cyan-300" onClick={async () => {
+              try {
+                await navigator.clipboard.writeText(code);
+                toast.success("Reset code copied.");
+              } catch {
+                setError("Select the code to copy it.");
+              }
+            }}>Copy code</button>
+          </div>
+        ) : (
+          <button type="button" disabled={generating} onClick={generate} className="rounded-lg bg-cyan-500 px-4 py-2 font-bold text-slate-950 disabled:opacity-60">
+            {generating ? "Generating…" : "Generate reset code"}
+          </button>
+        )}
+        {error && <p role="alert" className="text-sm text-red-300">{error}</p>}
+        <button type="button" disabled={generating} onClick={onClose} className="block text-sm text-cyan-300">Back to dashboard</button>
       </div>
     </main>
   );
