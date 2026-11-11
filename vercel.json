@@ -1,4 +1,9 @@
 {
+  "git": {
+    "deploymentEnabled": {
+      "diagnostics/android-web-push-403": false
+    }
+  },
   "rewrites": [
     {
       "source": "/((?!api/|assets/|.*\\..*).*)",

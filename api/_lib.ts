@@ -82,11 +82,57 @@ export function configurePush() {
   const publicKey = process.env.VAPID_PUBLIC_KEY;
   const privateKey = process.env.VAPID_PRIVATE_KEY;
   if (!subject || !publicKey || !privateKey) throw new Error("Missing VAPID_SUBJECT, VAPID_PUBLIC_KEY, or VAPID_PRIVATE_KEY");
-  webpush.setVapidDetails(subject, publicKey, privateKey);
+  try {
+    webpush.setVapidDetails(subject, publicKey, privateKey);
+  } catch {
+    // Library validation errors can include configuration values.
+    throw new Error("Invalid Web Push VAPID configuration");
+  }
   return webpush;
 }
 
+function vapidSubjectFormat(subject: string | undefined) {
+  if (!subject) return "missing";
+  if (/\s/.test(subject)) return "invalid";
+  if (/^mailto:[^@/?#<>]+@[^@/?#<>]+$/i.test(subject)) return "mailto";
+  if (/^https:\/\//i.test(subject)) {
+    try {
+      const url = new URL(subject);
+      if (url.hostname && !url.username && !url.password) {
+        return url.hostname === "localhost" ? "https_localhost" : "https";
+      }
+    } catch {
+      return "invalid";
+    }
+  }
+  return "invalid";
+}
+
+function pushRejectionCategory(statusCode: number | undefined, body: unknown) {
+  if (statusCode === 401) return "provider_unauthorized";
+  if (statusCode === 403) {
+    // Match a known FCM response exactly. Provider-controlled text never reaches logs.
+    if (typeof body === "string" && body.length <= 256 &&
+      body.trim().toLowerCase() ===
+        "the vapid credentials in the authorization header do not correspond to the credentials used to create the subscriptions.") {
+      return "vapid_subscription_credentials_mismatch";
+    }
+    return "provider_forbidden";
+  }
+  if (statusCode === 404 || statusCode === 410) return "subscription_unavailable";
+  return statusCode === undefined ? "no_provider_status" : "other_provider_rejection";
+}
+
 export async function notifyPush(request: ServiceRequest) {
+  const publicKey = process.env.VAPID_PUBLIC_KEY;
+  const keyBytes = publicKey ? Buffer.from(publicKey, "base64url") : null;
+  console.info("[push] VAPID configuration diagnostics", {
+    requestId: request.id,
+    subjectFormat: vapidSubjectFormat(process.env.VAPID_SUBJECT),
+    configuredKeyFingerprint: keyBytes?.length === 65 && keyBytes[0] === 4
+      ? crypto.createHash("sha256").update(keyBytes).digest("hex").slice(0, 12)
+      : null,
+  });
   const push = configurePush();
   const db = supabaseAdmin();
   const { data, error } = await db.from("push_subscriptions").select("id, subscription");
@@ -118,12 +164,15 @@ export async function notifyPush(request: ServiceRequest) {
       });
       return "accepted";
     } catch (err: unknown) {
-      const statusCode = typeof err === "object" && err !== null && "statusCode" in err
-        ? (err as { statusCode?: number }).statusCode : undefined;
+      const failure = typeof err === "object" && err !== null
+        ? err as { statusCode?: unknown; body?: unknown } : undefined;
+      const status = failure?.statusCode;
+      const statusCode = typeof status === "number" && Number.isInteger(status) &&
+        status >= 100 && status <= 599 ? status : undefined;
       console.error("[push] Delivery rejected by push service", {
         requestId: request.id,
         statusCode: statusCode ?? null,
-        // Do not log push endpoints, subscription tokens, keys, payloads or provider response bodies.
+        category: pushRejectionCategory(statusCode, failure?.body),
       });
       if (statusCode === 404 || statusCode === 410) {
         const { error: cleanupError } = await db.from("push_subscriptions").delete().eq("id", row.id);
