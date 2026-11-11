@@ -90,22 +90,57 @@ export async function notifyPush(request: ServiceRequest) {
   const push = configurePush();
   const db = supabaseAdmin();
   const { data, error } = await db.from("push_subscriptions").select("id, subscription");
-  if (error) throw error;
+  if (error) {
+    console.error("[push] Unable to load subscriptions", { message: error.message, code: error.code });
+    throw error;
+  }
+  const subscriptions = data || [];
+  console.info("[push] Starting notification delivery", {
+    requestId: request.id,
+    subscriptionCount: subscriptions.length,
+  });
+  if (subscriptions.length === 0) {
+    console.warn("[push] No subscriptions registered; notification not sent", { requestId: request.id });
+    return;
+  }
   const message = JSON.stringify({
     title: request.is_emergency ? "Emergency plumbing request" : "New plumbing request",
     body: `${request.name} · ${request.city} · ${request.service_type}`,
     requestId: request.id,
     url: `/admin?request=${request.id}`,
   });
-  await Promise.all((data || []).map(async (row) => {
+  const outcomes = await Promise.all(subscriptions.map(async (row) => {
     try {
-      await push.sendNotification(row.subscription, message);
-    } catch (error: any) {
-      if (error?.statusCode === 404 || error?.statusCode === 410) {
-        await db.from("push_subscriptions").delete().eq("id", row.id);
+      const response = await push.sendNotification(row.subscription, message);
+      console.info("[push] Delivery accepted by push service", {
+        requestId: request.id,
+        statusCode: response.statusCode,
+      });
+      return "accepted";
+    } catch (err: unknown) {
+      const statusCode = typeof err === "object" && err !== null && "statusCode" in err
+        ? (err as { statusCode?: number }).statusCode : undefined;
+      console.error("[push] Delivery rejected by push service", {
+        requestId: request.id,
+        statusCode: statusCode ?? null,
+        // Do not log push endpoints, subscription tokens, keys, payloads or provider response bodies.
+      });
+      if (statusCode === 404 || statusCode === 410) {
+        const { error: cleanupError } = await db.from("push_subscriptions").delete().eq("id", row.id);
+        if (cleanupError) console.error("[push] Failed to remove expired subscription", {
+          requestId: request.id,
+          code: cleanupError.code,
+        });
       }
+      return "failed";
     }
   }));
+  console.info("[push] Notification delivery summary", {
+    requestId: request.id,
+    subscriptionCount: subscriptions.length,
+    accepted: outcomes.filter((result) => result === "accepted").length,
+    failed: outcomes.filter((result) => result === "failed").length,
+  });
 }
 
 export function validateRequest(input: any) {
