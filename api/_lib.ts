@@ -53,61 +53,48 @@ export function setCors(res: ServerResponse) {
   res.setHeader("Access-Control-Allow-Methods", "GET, POST, PATCH, DELETE, OPTIONS");
 }
 
-function secret() {
-  return process.env.ADMIN_PASSWORD || "";
+const adminSessionAge = 604800;
+type AdminRole = "cody" | "anthony";
+
+export function sameSecret(first: string, second: string) {
+  const digest = (value: string) => crypto.createHash("sha256").update(value).digest();
+  return crypto.timingSafeEqual(digest(first), digest(second));
 }
 
-function signature(value: string) {
-  return crypto.createHmac("sha256", secret()).update(value).digest("hex");
+export async function codyPasswordHash() {
+  const { data, error } = await supabaseAdmin().from("dispatch_password")
+    .select("password_hash").eq("singleton", true).maybeSingle();
+  if (error) throw error;
+  return data?.password_hash as string | undefined;
 }
 
-export function createAdminCookie() {
-  const value = "cody-admin";
-  return `${value}.${signature(value)}`;
+function adminSignature(value: string, key: string) {
+  return crypto.createHmac("sha256", key).update(value).digest("hex");
 }
 
-export function isAdmin(req: IncomingMessage) {
-  const cookieHeader = String(req.headers.cookie || "");
-  const cookie = cookieHeader.split(";").map((part) => part.trim()).find((part) => part.startsWith("cody_admin="));
-  if (!cookie || !secret()) return false;
-  const token = decodeURIComponent(cookie.split("=").slice(1).join("="));
-  const [value, sig] = token.split(".");
-  const expected = signature(value || "");
-  return value === "cody-admin" && Boolean(sig) && sig.length === expected.length && crypto.timingSafeEqual(Buffer.from(sig), Buffer.from(expected));
+export function createAdminCookie(role: AdminRole, key: string) {
+  const value = `${role}.${Math.floor(Date.now() / 1000) + adminSessionAge}`;
+  return `cody_admin=${value}.${adminSignature(value, key)}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=${adminSessionAge}`;
 }
 
-export function dispatchAccountsEnabled() {
-  return process.env.DISPATCH_ACCOUNTS_MODE === "setup" || process.env.DISPATCH_ACCOUNTS_MODE === "enabled";
-}
+export async function adminRole(req: IncomingMessage): Promise<AdminRole | null> {
+  const token = /(?:^|;\s*)cody_admin=([^;]+)/.exec(req.headers.cookie || "")?.[1];
+  if (!token) return null;
 
-export function dispatchLegacyLoginEnabled() {
-  return process.env.DISPATCH_ACCOUNTS_MODE !== "enabled";
-}
+  const parts = /^(cody|anthony)\.(\d+)\.([a-f0-9]{64})$/.exec(token);
+  if (parts) {
+    const [, role, expires, signature] = parts;
+    if (Number(expires) <= Math.floor(Date.now() / 1000)) return null;
+    const key = role === "anthony"
+      ? process.env.DISPATCH_ACCESS_CODE
+      : await codyPasswordHash() ?? process.env.ADMIN_PASSWORD;
+    return key && sameSecret(signature, adminSignature(`${role}.${expires}`, key)) ? role as AdminRole : null;
+  }
 
-export function dispatchHash(value: string) {
-  return crypto.createHash("sha256").update(value).digest("hex");
-}
-
-export function dispatchSession(req: IncomingMessage) {
-  return /(?:^|;\s*)cody_dispatch=([A-Za-z0-9_-]{43})(?=;|$)/.exec(req.headers.cookie || "")?.[1];
-}
-
-export function dispatchCookie(token: string, remember?: boolean) {
-  const age = !token ? "; Max-Age=0" : remember ? "; Max-Age=2592000" : "";
-  return `cody_dispatch=${token}; Path=/; HttpOnly; Secure; SameSite=Strict${age}`;
-}
-
-export async function dispatchAccountAction(action: string, args: {
-  username?: string; credential?: string; password?: string; token?: string;
-  remember?: boolean; recoveryHashes?: string[];
-} = {}) {
-  const { data, error } = await supabaseAdmin().rpc("dispatch_account_action", {
-    action, account_name: args.username ?? null, credential: args.credential ?? null,
-    new_password: args.password ?? null, session_hash: args.token ? dispatchHash(args.token) : null,
-    remember_device: args.remember ?? false, new_recovery_hashes: args.recoveryHashes ?? null,
-  });
-  if (error) throw new Error("Dispatch account service unavailable");
-  return data;
+  const initialPassword = process.env.ADMIN_PASSWORD;
+  if (!initialPassword || !/^cody-admin\.[a-f0-9]{64}$/.test(token)) return null;
+  if (!sameSecret(token, `cody-admin.${adminSignature("cody-admin", initialPassword)}`)) return null;
+  return await codyPasswordHash() ? null : "cody";
 }
 
 export function dispatchSameOrigin(req: IncomingMessage) {
@@ -115,21 +102,12 @@ export function dispatchSameOrigin(req: IncomingMessage) {
 }
 
 export async function adminRequired(req: IncomingMessage, res: ServerResponse) {
-  if (dispatchAccountsEnabled()) {
-    if (req.method !== "GET" && !dispatchSameOrigin(req)) {
-      json(res, 403, { error: "Forbidden" });
-      return false;
-    }
-    const token = dispatchSession(req);
-    try {
-      if (token && ["cody", "anthony"].includes(await dispatchAccountAction("session", { token }))) return true;
-    } catch {
-      json(res, 503, { error: "Dispatch sign-in is temporarily unavailable" });
-      return false;
-    }
+  try {
+    if (await adminRole(req)) return true;
+    json(res, 401, { error: "Unauthorized" });
+  } catch {
+    json(res, 503, { error: "Dispatch sign-in is temporarily unavailable" });
   }
-  if (dispatchLegacyLoginEnabled() && isAdmin(req)) return true;
-  json(res, 401, { error: "Unauthorized" });
   return false;
 }
 
