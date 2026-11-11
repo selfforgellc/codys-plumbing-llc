@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Bell, Check, Copy, ExternalLink, LogOut, MapPin, Phone, RefreshCw, ShieldCheck, X } from "lucide-react";
 import { toast } from "sonner";
 import { getCurrentPushSubscription } from "@/lib/pushSubscription";
+import { DispatchAccountForm, type AccountAction } from "./DispatchAccountForm";
 
 type Status = "New" | "Contacted" | "Scheduled" | "In Progress" | "Completed" | "Cancelled";
 type Request = { id: string; created_at: string; name: string; phone: string; address: string; city: string; service_type: string; description: string; is_emergency: boolean; preferred_time: string; status: Status };
@@ -9,6 +10,11 @@ const statuses: Status[] = ["New", "Contacted", "Scheduled", "In Progress", "Com
 
 export default function AdminDashboard() {
   const [password, setPassword] = useState("");
+  const [username, setUsername] = useState("");
+  const [remember, setRemember] = useState(false);
+  const [accounts, setAccounts] = useState<boolean | null>(null);
+  const [legacyLogin, setLegacyLogin] = useState(false);
+  const [accountAction, setAccountAction] = useState<AccountAction | null>(null);
   const [authed, setAuthed] = useState(false);
   const [loginLoading, setLoginLoading] = useState(false);
   const [requests, setRequests] = useState<Request[]>([]);
@@ -26,13 +32,27 @@ export default function AdminDashboard() {
     setLoading(false);
   };
 
-  useEffect(() => { load(); }, []);
+  useEffect(() => {
+    load();
+    fetch("/api/admin/login").then(async (response) => {
+      if (!response.ok) throw new Error("Unable to load sign-in settings");
+      const settings = await response.json();
+      setAccounts(settings.accounts === true);
+      setLegacyLogin(settings.legacy === true);
+    }).catch(() => toast.error("Could not load sign-in. Refresh and try again."));
+  }, []);
 
   const login = async (event: React.FormEvent) => {
     event.preventDefault(); setLoginLoading(true);
-    const response = await fetch("/api/admin/login", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ password }) });
-    if (!response.ok) toast.error("Invalid admin password"); else { setPassword(""); setAuthed(true); await load(); }
-    setLoginLoading(false);
+    try {
+      const response = await fetch("/api/admin/login", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ username, password, remember }) });
+      if (!response.ok) toast.error((await response.json()).error || "Unable to sign in.");
+      else { setPassword(""); await load(); }
+    } catch {
+      toast.error("Could not reach Dispatch. Try again.");
+    } finally {
+      setLoginLoading(false);
+    }
   };
 
   const updateStatus = async (id: string, status: Status) => {
@@ -87,9 +107,52 @@ export default function AdminDashboard() {
 
   const counts = useMemo(() => statuses.reduce((acc, status) => ({ ...acc, [status]: requests.filter((request) => request.status === status).length }), {} as Record<Status, number>), [requests]);
 
-  if (!authed) return <main className="min-h-screen bg-slate-950 px-4 py-16 text-slate-100"><div className="mx-auto max-w-md rounded-2xl border border-cyan-500/30 bg-slate-900 p-8 shadow-2xl"><ShieldCheck className="h-10 w-10 text-cyan-400" /><h1 className="mt-4 text-3xl font-black font-heading">Cody's Dispatch</h1><p className="mt-2 text-sm text-slate-400">Protected admin dashboard</p><form onSubmit={login} className="mt-6 space-y-4"><input autoFocus required type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Admin password" className="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-3 text-white focus:border-cyan-400 focus:outline-none" /><button disabled={loginLoading} className="w-full rounded-lg bg-cyan-500 px-4 py-3 font-black text-slate-950 disabled:opacity-60">{loginLoading ? "Signing in..." : "Open dashboard"}</button></form><a href="/" className="mt-5 block text-center text-xs text-cyan-300">Back to website</a></div></main>;
+  if (!authed || accountAction) return (
+    <main className="min-h-screen bg-slate-950 px-4 py-16 text-slate-100">
+      <div className="mx-auto max-w-md rounded-2xl border border-cyan-500/30 bg-slate-900 p-8 shadow-2xl">
+        <ShieldCheck className="h-10 w-10 text-cyan-400" />
+        <h1 className="mt-4 text-3xl font-black font-heading">Cody's Dispatch</h1>
+        {accountAction ? (
+          <DispatchAccountForm key={accountAction} action={accountAction}
+            onCancel={() => setAccountAction(null)}
+            onComplete={() => {
+              setAccountAction(null);
+              setAuthed(false);
+              setPassword("");
+              toast.success("Sign in with your new password.");
+            }} />
+        ) : (
+          <form onSubmit={login} className="mt-6 space-y-4">
+            {accounts && <label className="block text-sm">Username
+              <input required={!legacyLogin} autoComplete="username" autoCapitalize="none" value={username}
+                onChange={(event) => setUsername(event.target.value)}
+                className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-3 text-white" />
+            </label>}
+            {accounts && legacyLogin && <p className="text-xs text-slate-400">Leave username blank to use the shared password during setup.</p>}
+            <label className="block text-sm">Password
+              <input required type="password" autoComplete="current-password" value={password}
+                onChange={(event) => setPassword(event.target.value)}
+                className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-3 text-white" />
+            </label>
+            {accounts && <label className="flex items-center gap-2 text-sm">
+              <input type="checkbox" checked={remember} onChange={(event) => setRemember(event.target.checked)} />
+              Remember this device
+            </label>}
+            <button disabled={loginLoading || accounts === null} className="w-full rounded-lg bg-cyan-500 px-4 py-3 font-black text-slate-950 disabled:opacity-60">
+              {loginLoading ? "Signing in…" : "Open dashboard"}
+            </button>
+            {accounts && <div className="flex flex-wrap justify-between gap-3 text-sm text-cyan-300">
+              <button type="button" onClick={() => { setPassword(""); setAccountAction("recover"); }}>Forgot password?</button>
+              <button type="button" onClick={() => { setPassword(""); setAccountAction("setup"); }}>Set up account</button>
+            </div>}
+          </form>
+        )}
+        {!authed && <a href="/" className="mt-5 block text-center text-xs text-cyan-300">Back to website</a>}
+      </div>
+    </main>
+  );
 
-  return <main className="min-h-screen bg-slate-950 text-slate-100"><header className="border-b border-slate-800 bg-slate-900/90"><div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-5"><div><p className="text-xs font-bold uppercase tracking-widest text-cyan-400">Cody's Plumbing</p><h1 className="text-2xl font-black font-heading">Dispatch dashboard</h1></div><div className="flex gap-2"><button onClick={enableNotifications} disabled={notifications === "enabling"} className="flex items-center gap-2 rounded-lg border border-cyan-500/40 px-3 py-2 text-xs font-bold text-cyan-300 hover:bg-cyan-500/10"><Bell className="h-4 w-4" />{notifications === "enabling" ? "Enabling…" : notifications === "enabled" ? "Notifications on" : "Enable notifications"}</button><button onClick={async () => { await fetch("/api/admin/logout", { method: "POST" }); setAuthed(false); }} className="flex items-center gap-2 rounded-lg border border-slate-700 px-3 py-2 text-xs font-bold text-slate-300 hover:bg-slate-800"><LogOut className="h-4 w-4" />Sign out</button></div></div></header><div className="mx-auto max-w-7xl px-4 py-8"><div className="mb-6 grid grid-cols-2 gap-3 md:grid-cols-6">{statuses.map((status) => <div key={status} className="rounded-xl border border-slate-800 bg-slate-900 p-3"><div className="text-xs text-slate-400">{status}</div><div className="mt-1 text-2xl font-black">{counts[status]}</div></div>)}</div><div className="mb-5 flex items-center justify-between"><div><h2 className="text-xl font-black font-heading">Service requests</h2><p className="text-sm text-slate-400">{requests.length} total request{requests.length === 1 ? "" : "s"}</p></div><button onClick={load} disabled={loading || deletingIds.size > 0} className="flex items-center gap-2 rounded-lg border border-slate-700 px-3 py-2 text-xs font-bold hover:bg-slate-800 disabled:opacity-60"><RefreshCw className="h-4 w-4" />Refresh</button></div>{loading ? <div className="rounded-xl border border-slate-800 bg-slate-900 p-8 text-center text-slate-400">Loading requests...</div> : requests.length === 0 ? <div className="rounded-xl border border-dashed border-slate-700 bg-slate-900/60 p-12 text-center text-slate-400">No service requests yet.</div> : <div className="space-y-4">{requests.map((request) => <article id={request.id} key={request.id} className={`rounded-2xl border bg-slate-900 p-5 ${request.id === focusId ? "border-cyan-400 ring-2 ring-cyan-400/30" : "border-slate-800"}`}><div className="flex flex-col justify-between gap-4 lg:flex-row"><div><div className="flex flex-wrap items-center gap-2"><span className={`rounded-full px-2 py-1 text-[10px] font-black uppercase ${request.is_emergency ? "bg-red-500/20 text-red-300" : "bg-cyan-500/10 text-cyan-300"}`}>{request.is_emergency ? "Emergency" : "Standard"}</span><span className="text-xs text-slate-500">{new Date(request.created_at).toLocaleString()}</span></div><h3 className="mt-2 text-xl font-black">{request.name}</h3><p className="mt-1 text-sm text-cyan-300">{request.service_type}</p></div>
+  return <main className="min-h-screen bg-slate-950 text-slate-100"><header className="border-b border-slate-800 bg-slate-900/90"><div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-5"><div><p className="text-xs font-bold uppercase tracking-widest text-cyan-400">Cody's Plumbing</p><h1 className="text-2xl font-black font-heading">Dispatch dashboard</h1></div><div className="flex flex-wrap justify-end gap-2">{accounts && <button onClick={() => setAccountAction("change")} className="rounded-lg border border-slate-700 px-3 py-2 text-xs font-bold">Change password</button>}<button onClick={enableNotifications} disabled={notifications === "enabling"} className="flex items-center gap-2 rounded-lg border border-cyan-500/40 px-3 py-2 text-xs font-bold text-cyan-300 hover:bg-cyan-500/10"><Bell className="h-4 w-4" />{notifications === "enabling" ? "Enabling…" : notifications === "enabled" ? "Notifications on" : "Enable notifications"}</button><button onClick={async () => { const response = await fetch("/api/admin/logout", { method: "POST" }); if (response.ok) setAuthed(false); else toast.error("Could not sign out. Try again."); }} className="flex items-center gap-2 rounded-lg border border-slate-700 px-3 py-2 text-xs font-bold text-slate-300 hover:bg-slate-800"><LogOut className="h-4 w-4" />Sign out</button></div></div></header><div className="mx-auto max-w-7xl px-4 py-8"><div className="mb-6 grid grid-cols-2 gap-3 md:grid-cols-6">{statuses.map((status) => <div key={status} className="rounded-xl border border-slate-800 bg-slate-900 p-3"><div className="text-xs text-slate-400">{status}</div><div className="mt-1 text-2xl font-black">{counts[status]}</div></div>)}</div><div className="mb-5 flex items-center justify-between"><div><h2 className="text-xl font-black font-heading">Service requests</h2><p className="text-sm text-slate-400">{requests.length} total request{requests.length === 1 ? "" : "s"}</p></div><button onClick={load} disabled={loading || deletingIds.size > 0} className="flex items-center gap-2 rounded-lg border border-slate-700 px-3 py-2 text-xs font-bold hover:bg-slate-800 disabled:opacity-60"><RefreshCw className="h-4 w-4" />Refresh</button></div>{loading ? <div className="rounded-xl border border-slate-800 bg-slate-900 p-8 text-center text-slate-400">Loading requests...</div> : requests.length === 0 ? <div className="rounded-xl border border-dashed border-slate-700 bg-slate-900/60 p-12 text-center text-slate-400">No service requests yet.</div> : <div className="space-y-4">{requests.map((request) => <article id={request.id} key={request.id} className={`rounded-2xl border bg-slate-900 p-5 ${request.id === focusId ? "border-cyan-400 ring-2 ring-cyan-400/30" : "border-slate-800"}`}><div className="flex flex-col justify-between gap-4 lg:flex-row"><div><div className="flex flex-wrap items-center gap-2"><span className={`rounded-full px-2 py-1 text-[10px] font-black uppercase ${request.is_emergency ? "bg-red-500/20 text-red-300" : "bg-cyan-500/10 text-cyan-300"}`}>{request.is_emergency ? "Emergency" : "Standard"}</span><span className="text-xs text-slate-500">{new Date(request.created_at).toLocaleString()}</span></div><h3 className="mt-2 text-xl font-black">{request.name}</h3><p className="mt-1 text-sm text-cyan-300">{request.service_type}</p></div>
     <div className="flex items-start gap-2">
       <select value={request.status} disabled={deletingIds.has(request.id)} onChange={(e) => updateStatus(request.id, e.target.value as Status)} className="h-fit min-w-0 flex-1 rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm font-bold text-white disabled:opacity-60 lg:flex-none">
         {statuses.map((status) => <option key={status}>{status}</option>)}

@@ -7,7 +7,7 @@ const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   setCors(res);
   if (req.method === "OPTIONS") return res.status(204).end();
-  if (!adminRequired(req, res)) return;
+  if (!(await adminRequired(req, res))) return;
   if (req.method !== "PATCH" && req.method !== "DELETE") {
     res.setHeader("Allow", "PATCH, DELETE, OPTIONS");
     return json(res, 405, { error: "Method not allowed" });
@@ -33,3 +33,4 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return json(res, 500, { error: req.method === "DELETE" ? "Unable to delete request" : "Unable to update request" });
   }
 }
+
