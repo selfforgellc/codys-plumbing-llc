@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { Bell, Check, Copy, ExternalLink, LogOut, MapPin, Phone, RefreshCw, ShieldCheck, X } from "lucide-react";
 import { toast } from "sonner";
-import { getCurrentPushSubscription } from "@/lib/pushSubscription";
+import { useDispatchNotifications } from "@/lib/useDispatchNotifications";
+import WebsiteVisits from "@/components/WebsiteVisits";
 
 type Status = "New" | "Contacted" | "Scheduled" | "In Progress" | "Completed" | "Cancelled";
 type Request = { id: string; created_at: string; name: string; phone: string; address: string; city: string; service_type: string; description: string; is_emergency: boolean; preferred_time: string; status: Status };
@@ -38,7 +39,7 @@ export default function AdminDashboard() {
   const [requests, setRequests] = useState<Request[]>([]);
   const [deletingIds, setDeletingIds] = useState<Set<string>>(() => new Set());
   const [loading, setLoading] = useState(false);
-  const [notifications, setNotifications] = useState("unknown");
+  const notifications = useDispatchNotifications(authed);
   const focusId = new URLSearchParams(window.location.search).get("request");
 
   const load = async () => {
@@ -105,25 +106,6 @@ export default function AdminDashboard() {
     }
   };
 
-  const enableNotifications = async () => {
-    setNotifications("enabling");
-    try {
-      if (!("serviceWorker" in navigator) || !("PushManager" in window)) {
-        throw new Error("Use Chrome on Android, or open Cody’s Dispatch from your iPhone Home Screen.");
-      }
-      const registration = await navigator.serviceWorker.register("/sw.js");
-      const permission = await Notification.requestPermission();
-      if (permission !== "granted") throw new Error("Notification permission was not granted.");
-      const configResponse = await fetch("/api/push/config", { cache: "no-store" });
-      const { publicKey, error } = await configResponse.json();
-      if (!configResponse.ok) throw new Error(error || "Push notifications are not configured.");
-      const subscription = await getCurrentPushSubscription(registration.pushManager, publicKey);
-      const saveResponse = await fetch("/api/push/subscribe", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(subscription) });
-      if (!saveResponse.ok) throw new Error("Could not save this device.");
-      setNotifications("enabled"); toast.success("Push notifications enabled on this device.");
-    } catch (error: any) { setNotifications("error"); toast.error(error?.message || "Unable to enable notifications"); }
-  };
-
   const counts = useMemo(() => statuses.reduce((acc, status) => ({ ...acc, [status]: requests.filter((request) => request.status === status).length }), {} as Record<Status, number>), [requests]);
 
   if (!authed && recoveringPassword) {
@@ -183,7 +165,7 @@ export default function AdminDashboard() {
     <button onClick={() => setShowResetCode(true)} className="rounded-lg border border-slate-700 px-3 py-2 text-xs font-bold">Cody’s password reset</button>
   )}{canChangePassword && (
     <button onClick={() => setChangingPassword(true)} className="rounded-lg border border-slate-700 px-3 py-2 text-xs font-bold">Change password</button>
-  )}<button onClick={enableNotifications} disabled={notifications === "enabling"} className="flex items-center gap-2 rounded-lg border border-cyan-500/40 px-3 py-2 text-xs font-bold text-cyan-300 hover:bg-cyan-500/10"><Bell className="h-4 w-4" />{notifications === "enabling" ? "Enabling…" : notifications === "enabled" ? "Notifications on" : "Enable notifications"}</button><button onClick={async () => { const response = await fetch("/api/admin/logout", { method: "POST" }); if (response.ok) { setRemember(false); setAuthed(false); } else toast.error("Could not sign out. Try again."); }} className="flex items-center gap-2 rounded-lg border border-slate-700 px-3 py-2 text-xs font-bold text-slate-300 hover:bg-slate-800"><LogOut className="h-4 w-4" />Sign out</button></div></div></header><div className="mx-auto max-w-7xl px-4 py-8"><div className="mb-6 grid grid-cols-2 gap-3 md:grid-cols-6">{statuses.map((status) => <div key={status} className="rounded-xl border border-slate-800 bg-slate-900 p-3"><div className="text-xs text-slate-400">{status}</div><div className="mt-1 text-2xl font-black">{counts[status]}</div></div>)}</div><div className="mb-5 flex items-center justify-between"><div><h2 className="text-xl font-black font-heading">Service requests</h2><p className="text-sm text-slate-400">{requests.length} total request{requests.length === 1 ? "" : "s"}</p></div><button onClick={load} disabled={loading || deletingIds.size > 0} className="flex items-center gap-2 rounded-lg border border-slate-700 px-3 py-2 text-xs font-bold hover:bg-slate-800 disabled:opacity-60"><RefreshCw className="h-4 w-4" />Refresh</button></div>{loading ? <div className="rounded-xl border border-slate-800 bg-slate-900 p-8 text-center text-slate-400">Loading requests...</div> : requests.length === 0 ? <div className="rounded-xl border border-dashed border-slate-700 bg-slate-900/60 p-12 text-center text-slate-400">No service requests yet.</div> : <div className="space-y-4">{requests.map((request) => <article id={request.id} key={request.id} className={`rounded-2xl border bg-slate-900 p-5 ${request.id === focusId ? "border-cyan-400 ring-2 ring-cyan-400/30" : "border-slate-800"}`}><div className="flex flex-col justify-between gap-4 lg:flex-row"><div><div className="flex flex-wrap items-center gap-2"><span className={`rounded-full px-2 py-1 text-[10px] font-black uppercase ${request.is_emergency ? "bg-red-500/20 text-red-300" : "bg-cyan-500/10 text-cyan-300"}`}>{request.is_emergency ? "Emergency" : "Standard"}</span><span className="text-xs text-slate-500">{new Date(request.created_at).toLocaleString()}</span></div><h3 className="mt-2 text-xl font-black">{request.name}</h3><p className="mt-1 text-sm text-cyan-300">{request.service_type}</p></div>
+  )}<NotificationButton state={notifications.state} onClick={notifications.enable} /><button onClick={async () => { const response = await fetch("/api/admin/logout", { method: "POST" }); if (response.ok) { setRemember(false); setAuthed(false); } else toast.error("Could not sign out. Try again."); }} className="flex items-center gap-2 rounded-lg border border-slate-700 px-3 py-2 text-xs font-bold text-slate-300 hover:bg-slate-800"><LogOut className="h-4 w-4" />Sign out</button></div></div></header><div className="mx-auto max-w-7xl px-4 py-8">{canIssueResetCode && <WebsiteVisits />}<div className="mb-6 grid grid-cols-2 gap-3 md:grid-cols-6">{statuses.map((status) => <div key={status} className="rounded-xl border border-slate-800 bg-slate-900 p-3"><div className="text-xs text-slate-400">{status}</div><div className="mt-1 text-2xl font-black">{counts[status]}</div></div>)}</div><div className="mb-5 flex items-center justify-between"><div><h2 className="text-xl font-black font-heading">Service requests</h2><p className="text-sm text-slate-400">{requests.length} total request{requests.length === 1 ? "" : "s"}</p></div><button onClick={load} disabled={loading || deletingIds.size > 0} className="flex items-center gap-2 rounded-lg border border-slate-700 px-3 py-2 text-xs font-bold hover:bg-slate-800 disabled:opacity-60"><RefreshCw className="h-4 w-4" />Refresh</button></div>{loading ? <div className="rounded-xl border border-slate-800 bg-slate-900 p-8 text-center text-slate-400">Loading requests...</div> : requests.length === 0 ? <div className="rounded-xl border border-dashed border-slate-700 bg-slate-900/60 p-12 text-center text-slate-400">No service requests yet.</div> : <div className="space-y-4">{requests.map((request) => <article id={request.id} key={request.id} className={`rounded-2xl border bg-slate-900 p-5 ${request.id === focusId ? "border-cyan-400 ring-2 ring-cyan-400/30" : "border-slate-800"}`}><div className="flex flex-col justify-between gap-4 lg:flex-row"><div><div className="flex flex-wrap items-center gap-2"><span className={`rounded-full px-2 py-1 text-[10px] font-black uppercase ${request.is_emergency ? "bg-red-500/20 text-red-300" : "bg-cyan-500/10 text-cyan-300"}`}>{request.is_emergency ? "Emergency" : "Standard"}</span><span className="text-xs text-slate-500">{new Date(request.created_at).toLocaleString()}</span></div><h3 className="mt-2 text-xl font-black">{request.name}</h3><p className="mt-1 text-sm text-cyan-300">{request.service_type}</p></div>
     <div className="flex items-start gap-2">
       <select value={request.status} disabled={deletingIds.has(request.id)} onChange={(e) => updateStatus(request.id, e.target.value as Status)} className="h-fit min-w-0 flex-1 rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm font-bold text-white disabled:opacity-60 lg:flex-none">
         {statuses.map((status) => <option key={status}>{status}</option>)}
@@ -326,5 +308,33 @@ function DispatchResetCode({ onClose }: { onClose: () => void }) {
         <button type="button" disabled={generating} onClick={onClose} className="block text-sm text-cyan-300">Back to dashboard</button>
       </div>
     </main>
+  );
+}
+
+
+function NotificationButton({ state, onClick }: {
+  state: ReturnType<typeof useDispatchNotifications>["state"];
+  onClick: () => void;
+}) {
+  const labels = {
+    checking: "Checking notifications…",
+    enabling: "Enabling…",
+    enabled: "Notifications on",
+    off: "Enable notifications",
+    blocked: "Notifications blocked",
+    stale: "Refresh notifications",
+    error: "Retry notifications",
+  };
+
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={state === "checking" || state === "enabling" || state === "enabled"}
+      className="flex items-center gap-2 rounded-lg border border-cyan-500/40 px-3 py-2 text-xs font-bold text-cyan-300 enabled:hover:bg-cyan-500/10"
+    >
+      <Bell className="h-4 w-4" />
+      {labels[state]}
+    </button>
   );
 }

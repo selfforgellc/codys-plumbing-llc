@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { recordWebsiteVisit } from "@/lib/websiteVisit";
 import Navbar from "@/components/Navbar";
 import BookingModal from "@/components/BookingModal";
 import InstantEstimator from "@/components/InstantEstimator";
@@ -8,6 +9,22 @@ import { Phone, Wrench, ShieldCheck, Clock, ArrowRight, CheckCircle2 } from "luc
 export default function Home() {
   const [bookingOpen, setBookingOpen] = useState(false);
   const [service, setService] = useState("General Plumbing Service");
+
+  useEffect(() => {
+    let timer: ReturnType<typeof setTimeout>;
+
+    function scheduleVisit() {
+      clearTimeout(timer);
+      if (document.visibilityState === "visible") timer = setTimeout(recordWebsiteVisit, 1500);
+    }
+
+    scheduleVisit();
+    document.addEventListener("visibilitychange", scheduleVisit);
+    return () => {
+      clearTimeout(timer);
+      document.removeEventListener("visibilitychange", scheduleVisit);
+    };
+  }, []);
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100">
