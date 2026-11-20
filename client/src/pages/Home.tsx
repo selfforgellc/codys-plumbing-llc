@@ -86,7 +86,7 @@ export default function Home() {
           <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
             {SERVICES.map((item) => (
               <article key={item.id} className="overflow-hidden rounded-xl border border-slate-800 bg-slate-900">
-                <img src={item.image} alt={item.title} className="h-40 w-full object-cover" />
+                <img src={item.image} alt={item.title} className={`h-40 w-full object-cover${item.id === "water-heaters" ? " object-top" : ""}`} />
                 <div className="p-5">
                   <p className="text-[10px] font-bold uppercase tracking-wider text-cyan-400">{item.badge}</p>
                   <h3 className="mt-1 text-lg font-black font-heading">{item.title}</h3>

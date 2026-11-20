@@ -17,7 +17,7 @@ export const COMPANY = {
   iconUrl: "/assets/codys-icon-512.png",
   images: {
     hero: "/assets/hero-plumber-truck.jpg",
-    waterHeater: "/assets/water-heater-install.jpg",
+    waterHeater: "/assets/tankless-water-heater-project.jpg",
     waterFiltration: "/assets/water-filtration-ro.jpg",
     commercial: "/assets/commercial-plumbing-project.jpg",
     pipeRepair: "/assets/emergency-pipe-repair.jpg",
