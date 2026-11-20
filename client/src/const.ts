@@ -100,7 +100,7 @@ export const SERVICES = [
     id: "repiping-fixtures",
     title: "Repiping, Sinks, Fixtures & Toilets",
     shortDesc: "Complete copper and Uponor PEX re-piping, garbage disposals, luxury faucet installs, and slab leak detection.",
-    image: COMPANY.images.hero,
+    image: "/assets/repiping-project.jpg",
     badge: "Licensed & Bonded",
     features: [
       "Durable Uponor PEX repipes with lifetime material warranty",
