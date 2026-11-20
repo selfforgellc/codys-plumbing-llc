@@ -11,6 +11,14 @@ export default function Home() {
   const [service, setService] = useState("General Plumbing Service");
 
   useEffect(() => {
+    const selected = SERVICES.find((item) => item.id === new URLSearchParams(window.location.search).get("service"));
+    if (selected) {
+      setService(selected.title);
+      setBookingOpen(true);
+    }
+  }, []);
+
+  useEffect(() => {
     let timer: ReturnType<typeof setTimeout>;
 
     function scheduleVisit() {
@@ -48,7 +56,7 @@ export default function Home() {
                   <span className="text-cyan-400">When you need it.</span>
                 </h1>
                 <p className="mt-4 max-w-xl text-base leading-relaxed text-slate-300 md:text-lg">
-                  Your local commercial and residential plumbing team for Kingman, Lake Havasu City, Bullhead City, and Mohave County.
+                  Local plumbers in Kingman, Arizona, serving homes and businesses in Lake Havasu City, Bullhead City, and across Mohave County.
                 </p>
                 <div className="mt-5 flex flex-col gap-2.5 sm:flex-row md:mt-7 md:gap-3">
                   <a href={`tel:${COMPANY.phoneRaw}`} className="rounded-xl bg-red-600 px-5 py-3 text-center font-black md:py-3.5 hover:bg-red-500">
@@ -78,7 +86,7 @@ export default function Home() {
         </section>
 
         {/* Services Section */}
-        <section id="services" className="container py-16">
+        <section id="services" className="container mx-auto scroll-mt-36 px-5 py-12 sm:px-6">
           <div className="mb-8">
             <p className="text-xs font-bold uppercase tracking-widest text-cyan-400">Our services</p>
             <h2 className="mt-2 text-3xl font-black font-heading">Plumbing for homes and businesses</h2>
@@ -86,11 +94,12 @@ export default function Home() {
           <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
             {SERVICES.map((item) => (
               <article key={item.id} className="overflow-hidden rounded-xl border border-slate-800 bg-slate-900">
-                <img src={item.image} alt={item.title} className={`w-full object-cover ${item.id === "water-heaters" ? "h-56 object-top" : "h-40"}`} />
+                <img src={item.image} alt={`${item.title} in Mohave County, Arizona`} loading="lazy" decoding="async" className={`w-full object-cover ${item.id === "water-heaters" ? "h-56 object-top" : "h-40"}`} />
                 <div className="p-5">
                   <p className="text-[10px] font-bold uppercase tracking-wider text-cyan-400">{item.badge}</p>
                   <h3 className="mt-1 text-lg font-black font-heading">{item.title}</h3>
                   <p className="mt-2 text-xs leading-relaxed text-slate-400">{item.shortDesc}</p>
+                  <a href={`/services/${item.id}.html`} className="mt-3 block w-fit text-sm font-semibold text-cyan-300 hover:underline">Learn more about {item.title}</a>
                   <button onClick={() => { setService(item.title); setBookingOpen(true); }} className="mt-4 text-xs font-bold text-cyan-300 hover:text-white">
                     Request service <ArrowRight className="ml-1 inline h-3.5 w-3.5" />
                   </button>
@@ -98,6 +107,12 @@ export default function Home() {
               </article>
             ))}
           </div>
+        </section>
+
+        <section id="service-areas" className="container mx-auto px-5 py-8 sm:px-6">
+          <h2 className="text-2xl font-black font-heading">Local plumbing across Mohave County</h2>
+          <p className="mt-3 max-w-3xl text-sm leading-relaxed text-slate-300">Based in Kingman, Cody's Plumbing serves residential and commercial customers in Lake Havasu City, Bullhead City, Fort Mohave, Golden Valley and surrounding communities. Call to confirm availability at your property.</p>
+          <a href="/service-area.html" className="mt-4 inline-block font-semibold text-cyan-300 hover:underline">Explore our service area</a>
         </section>
 
         {/* Budgeting Tool Section (Instant Estimator Component) */}

@@ -13,14 +13,14 @@ export const COMPANY = {
   rocVerifyUrl: "https://checkcontractorlicense.com/az/plumbing-contractors/kingman/",
   hours: "24 Hours / 7 Days a Week Emergency Service",
   officeHours: "Monday – Friday: 7:00 AM – 6:00 PM | Sat: 8:00 AM – 2:00 PM | 24/7 Rapid Response",
-  logoUrl: "/assets/codys-plumbing-logo.png",
+  logoUrl: "/assets/codys-plumbing-logo.webp",
   iconUrl: "/assets/codys-icon-512.png",
   images: {
     hero: "/assets/cody-real-plumbing.jpg",
     waterHeater: "/assets/tankless-water-heater-project.jpg",
     waterFiltration: "/assets/water-filtration-project.jpg",
     commercial: "/assets/commercial-plumbing-project.jpg",
-    pipeRepair: "/assets/emergency-pipe-repair.jpg",
+    pipeRepair: "/assets/emergency-plumbing.webp",
     drainCamera: "/assets/drain-cleaning-project.jpg",
   }
 };
