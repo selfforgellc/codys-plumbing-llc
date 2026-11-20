@@ -84,15 +84,13 @@ export const SERVICES = [
   },
   {
     id: "drain-sewer",
-    title: "Drain Cleaning & Camera Inspection",
-    shortDesc: "Full color HD video sewer line diagnostics, motorized snaking, and high-pressure hydro-jet root removal.",
+    title: "Drain Cleaning",
+    shortDesc: "Motorized snaking, drain clearing, and high-pressure hydro-jet root removal.",
     image: COMPANY.images.drainCamera,
-    badge: "HD Video Diagnostics",
+    badge: "Drain & Sewer Service",
     features: [
-      "See the blockage with your own eyes on color HD monitor",
       "Tough tree root cutting and scale scouring",
-      "Trenchless pipe lining and spot sewer line repairs",
-      "Free camera review with any main line clearing"
+      "Trenchless pipe lining and spot sewer line repairs"
     ],
     pricingGuide: "Drain clearing specials starting at $99"
   },
