@@ -19,10 +19,10 @@ export default function Navbar({ onOpenBooking }: NavbarProps) {
   }, []);
 
   return (
-    <>
+    <div className="sticky top-0 z-50">
       {/* Top Emergency Announcement Ribbon */}
-      <div className="bg-gradient-to-r from-red-600 via-sky-600 to-blue-700 text-white text-xs font-semibold py-1.5 px-4 shadow-md sticky top-0 z-50">
-        <div className="container flex flex-wrap items-center justify-between gap-2">
+      <div className="bg-gradient-to-r from-red-600 via-sky-600 to-blue-700 text-white text-xs font-semibold py-1.5 px-4 shadow-md">
+        <div className="container mx-auto flex flex-wrap items-center justify-between gap-2">
           <div className="flex items-center gap-2">
             <span className="flex h-2 w-2 rounded-full bg-white animate-ping" />
             <span className="uppercase tracking-wider font-extrabold flex items-center gap-1.5">
@@ -51,13 +51,13 @@ export default function Navbar({ onOpenBooking }: NavbarProps) {
 
       {/* Main Glass Navigation Header */}
       <header
-        className={`sticky top-[31px] z-40 transition-all duration-300 border-b ${
+        className={`relative transition-colors duration-300 border-b py-3.5 ${
           scrolled
-            ? "bg-slate-950/95 backdrop-blur-md border-cyan-500/20 shadow-2xl shadow-cyan-950/40 py-2.5"
-            : "bg-slate-950/80 backdrop-blur-sm border-slate-800 py-3.5"
+            ? "bg-slate-950/95 backdrop-blur-md border-cyan-500/20 shadow-2xl shadow-cyan-950/40"
+            : "bg-slate-950/80 backdrop-blur-sm border-slate-800"
         }`}
       >
-        <div className="container flex items-center justify-between gap-4">
+        <div className="container mx-auto flex items-center justify-between gap-4 px-5 sm:px-6">
           {/* Brand Logo */}
           <a href="#" className="flex items-center gap-3 group focus:outline-none">
             <img
@@ -119,6 +119,7 @@ export default function Navbar({ onOpenBooking }: NavbarProps) {
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             className="lg:hidden p-2 rounded-lg bg-slate-900 border border-slate-700 text-slate-200 hover:text-white"
             aria-label="Toggle menu"
+            aria-expanded={mobileMenuOpen}
           >
             {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
@@ -170,6 +171,6 @@ export default function Navbar({ onOpenBooking }: NavbarProps) {
           </div>
         )}
       </header>
-    </>
+    </div>
   );
 }
