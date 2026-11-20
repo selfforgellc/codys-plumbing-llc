@@ -43,7 +43,7 @@ export default function Home() {
                   <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
                   24/7 Emergency Service · ROC #{COMPANY.rocPrimary}
                 </div>
-                <h1 className="mt-4 text-[clamp(1.75rem,7.8vw,2.25rem)] font-black leading-[1.12] font-heading sm:text-5xl md:text-7xl">
+                <h1 className="mt-4 text-[clamp(1.9rem,8.5vw,2.5rem)] font-black leading-[1.12] font-heading sm:text-5xl md:text-7xl">
                   Plumbing done right.<br />
                   <span className="text-cyan-400">When you need it.</span>
                 </h1>
