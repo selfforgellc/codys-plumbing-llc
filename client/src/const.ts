@@ -19,7 +19,7 @@ export const COMPANY = {
     hero: "/assets/hero-plumber-truck.jpg",
     waterHeater: "/assets/water-heater-install.jpg",
     waterFiltration: "/assets/water-filtration-ro.jpg",
-    commercial: "/assets/commercial-plumbing.jpg",
+    commercial: "/assets/commercial-plumbing-project.jpg",
     pipeRepair: "/assets/emergency-pipe-repair.jpg",
     drainCamera: "/assets/drain-camera-inspection.jpg",
   }
