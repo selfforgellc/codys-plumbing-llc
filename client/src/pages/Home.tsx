@@ -36,35 +36,35 @@ export default function Home() {
             <img src={COMPANY.images.hero} alt="Plumbing service" className="h-full w-full object-cover" />
             <div className="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-950/90 to-slate-950/30" />
           </div>
-          <div className="container relative z-10 py-16 md:py-24">
-            <div className="grid items-center gap-10 lg:grid-cols-2">
+          <div className="container relative z-10 mx-auto px-5 py-9 sm:px-6 md:py-16 lg:py-24">
+            <div className="grid items-center gap-6 lg:grid-cols-2 lg:gap-10">
               <div>
-                <div className="inline-flex items-center gap-2 rounded-full border border-cyan-400/40 bg-cyan-950/70 px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-cyan-300">
+                <div className="inline-flex items-center gap-2 rounded-full border border-cyan-400/40 bg-cyan-950/70 px-3 py-1.5 text-[10px] sm:text-xs font-bold uppercase tracking-wide text-cyan-300">
                   <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
                   24/7 Emergency Service · ROC #{COMPANY.rocPrimary}
                 </div>
-                <h1 className="mt-5 text-5xl font-black leading-tight font-heading md:text-7xl">
+                <h1 className="mt-4 text-[clamp(1.75rem,7.8vw,2.25rem)] font-black leading-[1.12] font-heading sm:text-5xl md:text-7xl">
                   Plumbing done right.<br />
                   <span className="text-cyan-400">When you need it.</span>
                 </h1>
-                <p className="mt-5 max-w-xl text-lg text-slate-300">
+                <p className="mt-4 max-w-xl text-base leading-relaxed text-slate-300 md:text-lg">
                   Your local commercial and residential plumbing team for Kingman, Lake Havasu City, Bullhead City, and Mohave County.
                 </p>
-                <div className="mt-7 flex flex-col gap-3 sm:flex-row">
-                  <a href={`tel:${COMPANY.phoneRaw}`} className="rounded-xl bg-red-600 px-5 py-3.5 text-center font-black hover:bg-red-500">
+                <div className="mt-5 flex flex-col gap-2.5 sm:flex-row md:mt-7 md:gap-3">
+                  <a href={`tel:${COMPANY.phoneRaw}`} className="rounded-xl bg-red-600 px-5 py-3 text-center font-black md:py-3.5 hover:bg-red-500">
                     <Phone className="mr-2 inline h-4 w-4 fill-current" />Call {COMPANY.phone}
                   </a>
-                  <button onClick={() => setBookingOpen(true)} className="rounded-xl bg-cyan-500 px-5 py-3.5 font-black text-slate-950 hover:bg-cyan-400">
+                  <button onClick={() => setBookingOpen(true)} className="rounded-xl bg-cyan-500 px-5 py-3 font-black text-slate-950 md:py-3.5 hover:bg-cyan-400">
                     <Wrench className="mr-2 inline h-4 w-4" />Schedule Service <ArrowRight className="ml-1 inline h-4 w-4" />
                   </button>
                 </div>
-                <div className="mt-7 flex flex-wrap gap-4 text-xs font-bold text-slate-300">
+                <div className="mt-5 flex flex-wrap gap-3 text-xs font-bold text-slate-300 md:mt-7 md:gap-4">
                   <span><Clock className="mr-1 inline h-4 w-4 text-cyan-400" />24/7 Local Dispatch</span>
                   <span><ShieldCheck className="mr-1 inline h-4 w-4 text-cyan-400" />Licensed & Bonded</span>
                   <span><CheckCircle2 className="mr-1 inline h-4 w-4 text-cyan-400" />Clear Quotes</span>
                 </div>
               </div>
-              <div className="mx-auto max-w-md rounded-2xl border border-cyan-500/30 bg-slate-900/90 p-6 shadow-2xl">
+              <div className="hidden mx-auto max-w-md rounded-2xl border border-cyan-500/30 bg-slate-900/90 p-6 shadow-2xl lg:block">
                 <img src={COMPANY.logoUrl} alt="Cody's Plumbing LLC" className="w-full" />
                 <div className="mt-5 border-t border-slate-800 pt-4 text-center text-sm text-slate-300">
                   Local help with water heaters · drain cleaning · leak repair · filtration · commercial plumbing
