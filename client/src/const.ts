@@ -21,7 +21,7 @@ export const COMPANY = {
     waterFiltration: "/assets/water-filtration-project.jpg",
     commercial: "/assets/commercial-plumbing-project.jpg",
     pipeRepair: "/assets/emergency-pipe-repair.jpg",
-    drainCamera: "/assets/drain-camera-inspection.jpg",
+    drainCamera: "/assets/drain-cleaning-project.jpg",
   }
 };
 
@@ -85,14 +85,14 @@ export const SERVICES = [
   {
     id: "drain-sewer",
     title: "Drain Cleaning & Inspection",
-    shortDesc: "Full color HD video sewer line diagnostics, motorized snaking, and high-pressure hydro-jet root removal.",
+    shortDesc: "Clear clogged drains and sewer lines, remove stubborn roots and buildup, and restore proper water flow.",
     image: COMPANY.images.drainCamera,
-    badge: "HD Video Diagnostics",
+    badge: "Drain & Sewer Service",
     features: [
-      "See the blockage with your own eyes on color HD monitor",
+      "Drain and sewer line blockage assessment",
       "Tough tree root cutting and scale scouring",
       "Trenchless pipe lining and spot sewer line repairs",
-      "Free camera review with any main line clearing"
+      "Main line clearing and blockage removal"
     ],
     pricingGuide: "Drain clearing specials starting at $99"
   },
