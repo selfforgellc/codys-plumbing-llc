@@ -86,7 +86,14 @@ export default function Home() {
           <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
             {SERVICES.map((item) => (
               <article key={item.id} className="overflow-hidden rounded-xl border border-slate-800 bg-slate-900">
-                <img src={item.image} alt={item.title} className={`h-40 w-full ${item.id === "repiping-fixtures" ? "object-contain bg-slate-950" : item.id === "water-heaters" ? "object-cover object-top" : "object-cover"}`} />
+                {item.id === "repiping-fixtures" ? (
+                  <div className="relative flex h-40 w-full items-center justify-center overflow-hidden bg-slate-950">
+                    <img src={item.image} alt="" aria-hidden="true" className="absolute inset-0 h-full w-full scale-110 object-cover opacity-40 blur-xl" />
+                    <img src={item.image} alt={item.title} className="relative h-full w-auto max-w-none origin-[50%_35%] scale-[1.5] object-contain" />
+                  </div>
+                ) : (
+                  <img src={item.image} alt={item.title} className={`h-40 w-full object-cover${item.id === "water-heaters" ? " object-top" : ""}`} />
+                )}
                 <div className="p-5">
                   <p className="text-[10px] font-bold uppercase tracking-wider text-cyan-400">{item.badge}</p>
                   <h3 className="mt-1 text-lg font-black font-heading">{item.title}</h3>
