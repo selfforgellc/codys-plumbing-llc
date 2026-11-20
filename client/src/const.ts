@@ -18,7 +18,7 @@ export const COMPANY = {
   images: {
     hero: "/assets/cody-real-plumbing.jpg",
     waterHeater: "/assets/tankless-water-heater-project.jpg",
-    waterFiltration: "/assets/water-filtration-ro.jpg",
+    waterFiltration: "/assets/water-filtration-project.jpg",
     commercial: "/assets/commercial-plumbing-project.jpg",
     pipeRepair: "/assets/emergency-pipe-repair.jpg",
     drainCamera: "/assets/drain-camera-inspection.jpg",
