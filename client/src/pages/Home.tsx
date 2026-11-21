@@ -40,7 +40,7 @@ export default function Home() {
         {/* Hero Section */}
         <section className="relative overflow-hidden border-b border-cyan-500/20">
           <div className="absolute inset-0 opacity-25">
-            <img src={COMPANY.images.hero} alt="Plumbing service" className="h-full w-full object-cover" />
+            <img src={COMPANY.images.hero} alt="Plumbing service" fetchPriority="high" decoding="async" className="h-full w-full object-cover" />
             <div className="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-950/90 to-slate-950/30" />
           </div>
           <div className="container relative z-10 mx-auto px-5 py-9 sm:px-6 md:py-16 lg:py-24">
@@ -72,7 +72,7 @@ export default function Home() {
                 </div>
               </div>
               <div className="hidden mx-auto max-w-md rounded-2xl border border-cyan-500/30 bg-slate-900/90 p-6 shadow-2xl lg:block">
-                <img src={COMPANY.logoUrl} alt="Cody's Plumbing LLC" className="w-full" />
+                <img src={COMPANY.logoUrl} alt="Cody's Plumbing LLC" loading="lazy" decoding="async" className="w-full" />
                 <div className="mt-5 border-t border-slate-800 pt-4 text-center text-sm text-slate-300">
                   Local help with water heaters · drain cleaning · leak repair · filtration · commercial plumbing
                   <a href={`tel:${COMPANY.phoneRaw}`} className="mt-4 block rounded-lg border border-cyan-400/40 bg-cyan-500/10 p-3 font-bold text-cyan-300 hover:bg-cyan-500 hover:text-slate-950">
