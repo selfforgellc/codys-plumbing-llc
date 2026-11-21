@@ -27,7 +27,7 @@ export default function BookingModal({ isOpen, onClose, initialService = "Genera
   const [sending, setSending] = useState(false);
 
   useEffect(() => {
-    if (isOpen) setForm({ ...emptyForm, service_type: initialService, description: initialEstimate ? `Budgeting range requested: ${initialEstimate}` : "" });
+    if (isOpen) setForm({ ...emptyForm, service_type: initialService, description: "" });
   }, [isOpen, initialService]);
 
   if (!isOpen) return null;
