@@ -57,7 +57,7 @@ export default function Home() {
                   <span className="text-cyan-400">When you need it.</span>
                 </h1>
                 <p className="mt-4 max-w-xl text-base leading-relaxed text-slate-300 md:text-lg">
-                  Local plumbers in Kingman, Arizona, serving homes and businesses in Lake Havasu City, Bullhead City, and across Mohave County.
+                  Serving Kingman and surrounding communities since 2012. Professional residential and commercial plumbing across Mohave County, including Lake Havasu City and Bullhead City.
                 </p>
                 <div className="mt-5 flex flex-col gap-2.5 sm:flex-row md:mt-7 md:gap-3">
                   <a href={`tel:${COMPANY.phoneRaw}`} onClick={() => trackConversion("phone_click")} className="rounded-xl bg-red-600 px-5 py-3 text-center font-black md:py-3.5 hover:bg-red-500">
@@ -121,7 +121,7 @@ export default function Home() {
           <div className="container flex flex-col items-center justify-between gap-5 text-center md:flex-row md:text-left">
             <div>
               <p className="text-xs font-bold uppercase tracking-widest text-cyan-400">Local, licensed & trusted</p>
-              <h2 className="mt-2 text-2xl font-black font-heading">Built for Mohave County</h2>
+              <h2 className="mt-2 text-2xl font-black font-heading">Serving Mohave County since 2012</h2>
               <p className="mt-1 text-sm text-slate-400">AZ ROC #{COMPANY.rocPrimary} · Commercial & residential plumbing</p>
             </div>
             <button onClick={() => openBooking()} className="rounded-lg bg-cyan-500 px-5 py-3 text-sm font-black text-slate-950 hover:bg-cyan-400">
