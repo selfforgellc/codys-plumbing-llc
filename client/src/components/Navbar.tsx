@@ -132,7 +132,7 @@ export default function Navbar({ onOpenBooking }: NavbarProps) {
               <div>
                 <div className="text-xs text-slate-400">Need Plumbing Help?</div>
                 <div className="text-base font-extrabold text-cyan-300">{COMPANY.phone}</div>
-                <div className="text-[10px] text-emerald-400 font-semibold">AZ ROC #{COMPANY.rocPrimary} • License #</div>
+                <div className="text-[10px] text-emerald-400 font-semibold">Arizona ROC #{COMPANY.rocPrimary}</div>
               </div>
               <a
                 href={`tel:${COMPANY.phoneRaw}`}
