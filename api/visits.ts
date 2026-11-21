@@ -30,12 +30,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       const startOfToday = new Date(`${day}T00:00:00-07:00`);
       const startOfWeek = new Date(startOfToday.getTime() - 6 * 86400000);
       const visits = supabaseAdmin().from("website_visits");
-      const [today, week] = await Promise.all([
+      const startOfMonth = new Date(startOfToday.getTime() - 29 * 86400000);
+      res.setHeader("Cache-Control", "private, no-store");
+      const [today, week, month, allTime] = await Promise.all([
         visits.select("id", { count: "exact", head: true }).gte("visited_at", startOfToday.toISOString()),
         visits.select("id", { count: "exact", head: true }).gte("visited_at", startOfWeek.toISOString()),
+        visits.select("id", { count: "exact", head: true }).gte("visited_at", startOfMonth.toISOString()),
+        visits.select("id", { count: "exact", head: true }),
       ]);
-      if (today.error || week.error) throw today.error ?? week.error;
-      return json(res, 200, { today: today.count, week: week.count });
+      if (today.error || week.error || month.error || allTime.error) throw today.error ?? week.error ?? month.error ?? allTime.error;
+      return json(res, 200, { today: today.count, week: week.count, month: month.count, allTime: allTime.count });
     }
 
     res.setHeader("Allow", "GET, POST");
