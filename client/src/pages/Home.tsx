@@ -152,6 +152,18 @@ export default function Home() {
         </a>
       </footer>
 
+      {/* Mobile conversion bar: visible on small screens without covering page content. */}
+      <div className="h-20 md:hidden" aria-hidden="true" />
+      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-cyan-500/30 bg-slate-950/95 px-3 py-3 shadow-[0_-8px_30px_rgba(0,0,0,0.45)] backdrop-blur-md md:hidden" role="region" aria-label="Quick plumbing contact options">
+        <div className="mx-auto flex max-w-lg gap-2">
+          <a href={`tel:${COMPANY.phoneRaw}`} className="flex min-h-12 flex-1 items-center justify-center gap-2 rounded-xl bg-red-600 px-3 text-sm font-extrabold text-white hover:bg-red-500" aria-label={`Call Cody's Plumbing at ${COMPANY.phone}`}>
+            <Phone className="h-5 w-5" aria-hidden="true" /> Call Cody
+          </a>
+          <button type="button" onClick={() => setBookingOpen(true)} className="flex min-h-12 flex-1 items-center justify-center gap-2 rounded-xl bg-cyan-400 px-3 text-sm font-extrabold text-slate-950 hover:bg-cyan-300">
+            <Wrench className="h-5 w-5" aria-hidden="true" /> Request Service
+          </button>
+        </div>
+      </div>
       <BookingModal isOpen={bookingOpen} onClose={() => setBookingOpen(false)} initialService={service} />
     </div>
   );
