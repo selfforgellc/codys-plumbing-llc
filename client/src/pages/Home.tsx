@@ -4,7 +4,7 @@ import { recordWebsiteVisit } from "@/lib/websiteVisit";
 import Navbar from "@/components/Navbar";
 import BookingModal from "@/components/BookingModal";
 import { COMPANY, SERVICES } from "@/const";
-import { Phone, Wrench, ShieldCheck, Clock, ArrowRight, CheckCircle2 } from "lucide-react";
+import { Phone, Wrench, ShieldCheck, Clock, ArrowRight, CheckCircle2, Star } from "lucide-react";
 
 export default function Home() {
   const [bookingOpen, setBookingOpen] = useState(false);
@@ -130,6 +130,16 @@ export default function Home() {
           </div>
         </section>
 
+        <section aria-labelledby="reviews-heading" className="border-b border-slate-800 bg-slate-900/40 py-9">
+          <div className="container mx-auto flex flex-col items-center justify-between gap-5 px-5 text-center sm:flex-row sm:text-left">
+            <div>
+              <h2 id="reviews-heading" className="text-xl font-black font-heading">Share your experience</h2>
+              <p className="mt-2 text-sm text-slate-300">Have we helped with your plumbing? We welcome your honest feedback on Google.</p>
+            </div>
+            <a href="https://search.google.com/local/writereview?placeid=ChIJ5d0Ue7fahigR6l0OjCTSXi8" target="_blank" rel="noopener noreferrer" className="inline-flex shrink-0 items-center justify-center gap-2 rounded-lg border border-cyan-400/50 bg-cyan-500/10 px-5 py-3 text-sm font-bold text-cyan-300 hover:bg-cyan-500 hover:text-slate-950"><Star className="h-5 w-5" aria-hidden="true" /> Leave a Google Review <ArrowRight className="h-4 w-4" aria-hidden="true" /></a>
+          </div>
+        </section>
+
         {/* Call to Action Section */}
         <section className="py-14 text-center">
           <div className="container">
@@ -149,6 +159,7 @@ export default function Home() {
 
       <footer className="border-t border-slate-800 py-6 text-center text-xs text-slate-500">
         © {new Date().getFullYear()} Cody's Plumbing, LLC · {COMPANY.address} · AZ ROC #{COMPANY.rocPrimary}
+        <a href="https://search.google.com/local/writereview?placeid=ChIJ5d0Ue7fahigR6l0OjCTSXi8" target="_blank" rel="noopener noreferrer" className="mx-auto mt-2 block w-fit rounded px-2 py-1 font-semibold text-cyan-300 hover:underline">Leave a Google Review</a>
         <a href="/admin" className="mx-auto mt-2 block w-fit rounded px-2 py-1 font-semibold text-slate-400 hover:text-cyan-300 focus-visible:outline-2 focus-visible:outline-cyan-400">
           Dispatch sign-in
         </a>
