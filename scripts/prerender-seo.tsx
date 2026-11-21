@@ -18,6 +18,7 @@ const business = {
   image: `${origin}${COMPANY.images.hero}`, logo: `${origin}${COMPANY.logoUrl}`,
   address: { "@type": "PostalAddress", streetAddress: "2470 E Neal Ave", addressLocality: "Kingman", addressRegion: "AZ", postalCode: "86409", addressCountry: "US" },
   areaServed: [...areas, { "@type": "AdministrativeArea", name: "Mohave County, Arizona" }],
+  contactPoint: { "@type": "ContactPoint", telephone: "+1-928-303-3589", contactType: "customer service", areaServed: "Mohave County, Arizona", availableLanguage: "English" },
   hasOfferCatalog: { "@type": "OfferCatalog", name: "Plumbing services", itemListElement: SERVICES.map((service) => ({ "@type": "Offer", itemOffered: { "@type": "Service", name: service.title, url: `${origin}${pathFor(service.id)}` } })) },
 };
 
@@ -104,6 +105,6 @@ writeFileSync(join(out, "index.html"), index.replace("</head>", `${homeMetadata}
 
 const urls = ["/", ...SERVICES.map((s) => pathFor(s.id)), "/service-area.html"];
 writeFileSync(join(out, "sitemap.xml"), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${urls.map((url) => `<url><loc>${esc(origin + url)}</loc></url>`).join("")}</urlset>\n`);
-writeFileSync(join(out, "robots.txt"), `User-agent: *\nDisallow: /api/\nSitemap: ${origin}/sitemap.xml\n`);
+writeFileSync(join(out, "robots.txt"), `User-agent: *\nDisallow: /api/\nDisallow: /admin\nDisallow: /admin.html\nSitemap: ${origin}/sitemap.xml\n`);
 writeFileSync(join(out, "404.html"), '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>Page not found | Cody’s Plumbing</title></head><body><h1>Page not found</h1><p><a href="/">Return to Cody’s Plumbing</a></p></body></html>');
 console.log(`SEO: prerendered homepage, ${SERVICES.length} services and service area, plus sitemap and private admin entry.`);
