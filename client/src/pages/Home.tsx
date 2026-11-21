@@ -1,3 +1,4 @@
+import { trackConversion } from "@/lib/conversions";
 import React, { useEffect, useState } from "react";
 import { recordWebsiteVisit } from "@/lib/websiteVisit";
 import Navbar from "@/components/Navbar";
@@ -13,7 +14,7 @@ export default function Home() {
     const selected = SERVICES.find((item) => item.id === new URLSearchParams(window.location.search).get("service"));
     if (selected) {
       setService(selected.title);
-      setBookingOpen(true);
+      openBooking();
     }
   }, []);
 
@@ -33,9 +34,10 @@ export default function Home() {
     };
   }, []);
 
+  const openBooking = () => { trackConversion("booking_open"); setBookingOpen(true); };
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100">
-      <Navbar onOpenBooking={() => setBookingOpen(true)} />
+      <Navbar onOpenBooking={() => openBooking()} />
       <main>
         {/* Hero Section */}
         <section className="relative overflow-hidden border-b border-cyan-500/20">
@@ -58,10 +60,10 @@ export default function Home() {
                   Local plumbers in Kingman, Arizona, serving homes and businesses in Lake Havasu City, Bullhead City, and across Mohave County.
                 </p>
                 <div className="mt-5 flex flex-col gap-2.5 sm:flex-row md:mt-7 md:gap-3">
-                  <a href={`tel:${COMPANY.phoneRaw}`} className="rounded-xl bg-red-600 px-5 py-3 text-center font-black md:py-3.5 hover:bg-red-500">
+                  <a href={`tel:${COMPANY.phoneRaw}`} onClick={() => trackConversion("phone_click")} className="rounded-xl bg-red-600 px-5 py-3 text-center font-black md:py-3.5 hover:bg-red-500">
                     <Phone className="mr-2 inline h-4 w-4 fill-current" />Call {COMPANY.phone}
                   </a>
-                  <button onClick={() => setBookingOpen(true)} className="rounded-xl bg-cyan-500 px-5 py-3 font-black text-slate-950 md:py-3.5 hover:bg-cyan-400">
+                  <button onClick={() => openBooking()} className="rounded-xl bg-cyan-500 px-5 py-3 font-black text-slate-950 md:py-3.5 hover:bg-cyan-400">
                     <Wrench className="mr-2 inline h-4 w-4" />Schedule Service <ArrowRight className="ml-1 inline h-4 w-4" />
                   </button>
                 </div>
@@ -75,7 +77,7 @@ export default function Home() {
                 <img src={COMPANY.logoUrl} alt="Cody's Plumbing LLC" loading="lazy" decoding="async" className="w-full" />
                 <div className="mt-5 border-t border-slate-800 pt-4 text-center text-sm text-slate-300">
                   Local help with water heaters · drain cleaning · leak repair · filtration · commercial plumbing
-                  <a href={`tel:${COMPANY.phoneRaw}`} className="mt-4 block rounded-lg border border-cyan-400/40 bg-cyan-500/10 p-3 font-bold text-cyan-300 hover:bg-cyan-500 hover:text-slate-950">
+                  <a href={`tel:${COMPANY.phoneRaw}`} onClick={() => trackConversion("phone_click")} className="mt-4 block rounded-lg border border-cyan-400/40 bg-cyan-500/10 p-3 font-bold text-cyan-300 hover:bg-cyan-500 hover:text-slate-950">
                     Call your local plumber: {COMPANY.phone}
                   </a>
                 </div>
@@ -99,7 +101,7 @@ export default function Home() {
                   <h3 className="mt-1 text-lg font-black font-heading">{item.title}</h3>
                   <p className="mt-2 text-xs leading-relaxed text-slate-400">{item.shortDesc}</p>
                   <a href={`/services/${item.id}.html`} className="mt-3 block w-fit text-sm font-semibold text-cyan-300 hover:underline">Learn more about {item.title}</a>
-                  <button onClick={() => { setService(item.title); setBookingOpen(true); }} className="mt-4 text-xs font-bold text-cyan-300 hover:text-white">
+                  <button onClick={() => { setService(item.title); openBooking(); }} className="mt-4 text-xs font-bold text-cyan-300 hover:text-white">
                     Request service <ArrowRight className="ml-1 inline h-3.5 w-3.5" />
                   </button>
                 </div>
@@ -122,7 +124,7 @@ export default function Home() {
               <h2 className="mt-2 text-2xl font-black font-heading">Built for Mohave County</h2>
               <p className="mt-1 text-sm text-slate-400">AZ ROC #{COMPANY.rocPrimary} · Commercial & residential plumbing</p>
             </div>
-            <button onClick={() => setBookingOpen(true)} className="rounded-lg bg-cyan-500 px-5 py-3 text-sm font-black text-slate-950 hover:bg-cyan-400">
+            <button onClick={() => openBooking()} className="rounded-lg bg-cyan-500 px-5 py-3 text-sm font-black text-slate-950 hover:bg-cyan-400">
               Request a local quote
             </button>
           </div>
@@ -134,10 +136,10 @@ export default function Home() {
             <h2 className="text-3xl font-black font-heading">Need a local plumber today?</h2>
             <p className="mt-2 text-sm text-slate-400">Call Cody's Plumbing or book online. Friendly local help across Mohave County.</p>
             <div className="mt-5 flex justify-center gap-3">
-              <a href={`tel:${COMPANY.phoneRaw}`} className="rounded-lg bg-red-600 px-5 py-3 font-black hover:bg-red-500">
+              <a href={`tel:${COMPANY.phoneRaw}`} onClick={() => trackConversion("phone_click")} className="rounded-lg bg-red-600 px-5 py-3 font-black hover:bg-red-500">
                 <Phone className="mr-2 inline h-4 w-4 fill-current" />{COMPANY.phone}
               </a>
-              <button onClick={() => setBookingOpen(true)} className="rounded-lg bg-cyan-500 px-5 py-3 font-black text-slate-950 hover:bg-cyan-400">
+              <button onClick={() => openBooking()} className="rounded-lg bg-cyan-500 px-5 py-3 font-black text-slate-950 hover:bg-cyan-400">
                 Book online
               </button>
             </div>
@@ -156,10 +158,10 @@ export default function Home() {
       <div className="h-20 md:hidden" aria-hidden="true" />
       <div className="fixed inset-x-0 bottom-0 z-40 border-t border-cyan-500/30 bg-slate-950/95 px-3 py-3 shadow-[0_-8px_30px_rgba(0,0,0,0.45)] backdrop-blur-md md:hidden" role="region" aria-label="Quick plumbing contact options">
         <div className="mx-auto flex max-w-lg gap-2">
-          <a href={`tel:${COMPANY.phoneRaw}`} className="flex min-h-12 flex-1 items-center justify-center gap-2 rounded-xl bg-red-600 px-3 text-sm font-extrabold text-white hover:bg-red-500" aria-label={`Call Cody's Plumbing at ${COMPANY.phone}`}>
+          <a href={`tel:${COMPANY.phoneRaw}`} onClick={() => trackConversion("phone_click")} className="flex min-h-12 flex-1 items-center justify-center gap-2 rounded-xl bg-red-600 px-3 text-sm font-extrabold text-white hover:bg-red-500" aria-label={`Call Cody's Plumbing at ${COMPANY.phone}`}>
             <Phone className="h-5 w-5" aria-hidden="true" /> Call Cody
           </a>
-          <button type="button" onClick={() => setBookingOpen(true)} className="flex min-h-12 flex-1 items-center justify-center gap-2 rounded-xl bg-cyan-400 px-3 text-sm font-extrabold text-slate-950 hover:bg-cyan-300">
+          <button type="button" onClick={() => openBooking()} className="flex min-h-12 flex-1 items-center justify-center gap-2 rounded-xl bg-cyan-400 px-3 text-sm font-extrabold text-slate-950 hover:bg-cyan-300">
             <Wrench className="h-5 w-5" aria-hidden="true" /> Request Service
           </button>
         </div>
