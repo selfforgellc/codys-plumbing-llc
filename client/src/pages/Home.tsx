@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { recordWebsiteVisit } from "@/lib/websiteVisit";
 import Navbar from "@/components/Navbar";
 import BookingModal from "@/components/BookingModal";
-import InstantEstimator from "@/components/InstantEstimator";
 import { COMPANY, SERVICES } from "@/const";
 import { Phone, Wrench, ShieldCheck, Clock, ArrowRight, CheckCircle2 } from "lucide-react";
 
@@ -113,11 +112,6 @@ export default function Home() {
           <h2 className="text-2xl font-black font-heading">Local plumbing across Mohave County</h2>
           <p className="mt-3 max-w-3xl text-sm leading-relaxed text-slate-300">Based in Kingman, Cody's Plumbing serves residential and commercial customers in Lake Havasu City, Bullhead City, Fort Mohave, Golden Valley and surrounding communities. Call to confirm availability at your property.</p>
           <a href="/service-area.html" className="mt-4 inline-block font-semibold text-cyan-300 hover:underline">Explore our service area</a>
-        </section>
-
-        {/* Budgeting Tool Section (Instant Estimator Component) */}
-        <section id="budgeting" className="container py-12">
-          <InstantEstimator />
         </section>
 
         {/* Licensing Section */}
