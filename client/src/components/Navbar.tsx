@@ -26,7 +26,7 @@ export default function Navbar({ onOpenBooking }: NavbarProps) {
           <div className="flex items-center gap-2">
             <span className="flex h-2 w-2 rounded-full bg-white animate-ping" />
             <span className="uppercase tracking-wider font-extrabold flex items-center gap-1.5">
-              <Clock className="w-3.5 h-3.5 inline" /> 24/7 Emergency Service Active
+              <Clock className="w-3.5 h-3.5 inline" /> Emergency Service · Call for Availability
             </span>
             <span className="hidden md:inline text-sky-200">|</span>
             <span className="hidden md:inline text-sky-100 font-normal">
@@ -99,7 +99,7 @@ export default function Navbar({ onOpenBooking }: NavbarProps) {
             >
               <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
               <div className="text-left">
-                <div className="text-[10px] text-slate-400 leading-none">24/7 Dispatch line</div>
+                <div className="text-[10px] text-slate-400 leading-none">Call for service</div>
                 <div className="text-sm text-cyan-300 font-extrabold">{COMPANY.phone}</div>
               </div>
             </a>
@@ -130,9 +130,9 @@ export default function Navbar({ onOpenBooking }: NavbarProps) {
           <div className="lg:hidden bg-slate-950/98 border-t border-slate-800 px-4 py-5 mt-3 space-y-4 shadow-2xl">
             <div className="p-3 bg-gradient-to-r from-blue-950/60 to-cyan-950/60 rounded-xl border border-cyan-500/30 flex items-center justify-between">
               <div>
-                <div className="text-xs text-slate-400">Need Immediate Help?</div>
+                <div className="text-xs text-slate-400">Need Plumbing Help?</div>
                 <div className="text-base font-extrabold text-cyan-300">{COMPANY.phone}</div>
-                <div className="text-[10px] text-emerald-400 font-semibold">AZ ROC #{COMPANY.rocPrimary} • Verified Active</div>
+                <div className="text-[10px] text-emerald-400 font-semibold">AZ ROC #{COMPANY.rocPrimary} • License #</div>
               </div>
               <a
                 href={`tel:${COMPANY.phoneRaw}`}
