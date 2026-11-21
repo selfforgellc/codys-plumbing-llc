@@ -67,6 +67,9 @@ export default function Home() {
                     <Wrench className="mr-2 inline h-4 w-4" />Schedule Service <ArrowRight className="ml-1 inline h-4 w-4" />
                   </button>
                 </div>
+                <a href="https://search.google.com/local/writereview?placeid=ChIJ5d0Ue7fahigR6l0OjCTSXi8" target="_blank" rel="noopener noreferrer" className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-xl border border-amber-400/60 bg-amber-400/10 px-5 py-3 text-sm font-bold text-amber-300 transition-colors hover:bg-amber-400 hover:text-slate-950 sm:w-auto">
+                  <Star className="h-5 w-5 fill-current" aria-hidden="true" /> Leave a Google Review <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                </a>
                 <div className="mt-5 flex flex-wrap gap-3 text-xs font-bold text-slate-300 md:mt-7 md:gap-4">
                   <span><Clock className="mr-1 inline h-4 w-4 text-cyan-400" />After-Hours Emergencies</span>
                   <span><ShieldCheck className="mr-1 inline h-4 w-4 text-cyan-400" />Licensed & Bonded</span>
@@ -127,16 +130,6 @@ export default function Home() {
             <button onClick={() => openBooking()} className="rounded-lg bg-cyan-500 px-5 py-3 text-sm font-black text-slate-950 hover:bg-cyan-400">
               Request a local quote
             </button>
-          </div>
-        </section>
-
-        <section aria-labelledby="reviews-heading" className="border-b border-slate-800 bg-slate-900/40 py-9">
-          <div className="container mx-auto flex flex-col items-center justify-between gap-5 px-5 text-center sm:flex-row sm:text-left">
-            <div>
-              <h2 id="reviews-heading" className="text-xl font-black font-heading">Share your experience</h2>
-              <p className="mt-2 text-sm text-slate-300">Have we helped with your plumbing? We welcome your honest feedback on Google.</p>
-            </div>
-            <a href="https://search.google.com/local/writereview?placeid=ChIJ5d0Ue7fahigR6l0OjCTSXi8" target="_blank" rel="noopener noreferrer" className="inline-flex shrink-0 items-center justify-center gap-2 rounded-lg border border-cyan-400/50 bg-cyan-500/10 px-5 py-3 text-sm font-bold text-cyan-300 hover:bg-cyan-500 hover:text-slate-950"><Star className="h-5 w-5" aria-hidden="true" /> Leave a Google Review <ArrowRight className="h-4 w-4" aria-hidden="true" /></a>
           </div>
         </section>
 
