@@ -7,7 +7,6 @@ interface BookingModalProps {
   isOpen: boolean;
   onClose: () => void;
   initialService?: string;
-  initialEstimate?: string;
 }
 
 type FormState = {
@@ -20,15 +19,15 @@ const emptyForm: FormState = {
   description: "", is_emergency: "no", preferred_time: "As soon as possible",
 };
 
-export default function BookingModal({ isOpen, onClose, initialService = "General Plumbing / Emergency Request", initialEstimate = "" }: BookingModalProps) {
-  const [form, setForm] = useState<FormState>({ ...emptyForm, service_type: initialService, description: initialEstimate ? `Budgeting range requested: ${initialEstimate}` : "" });
+export default function BookingModal({ isOpen, onClose, initialService = "General Plumbing / Emergency Request" }: BookingModalProps) {
+  const [form, setForm] = useState<FormState>({ ...emptyForm, service_type: initialService, description: "" });
   const [submitted, setSubmitted] = useState(false);
   const [requestId, setRequestId] = useState("");
   const [sending, setSending] = useState(false);
 
   useEffect(() => {
     if (isOpen) setForm({ ...emptyForm, service_type: initialService, description: initialEstimate ? `Budgeting range requested: ${initialEstimate}` : "" });
-  }, [isOpen, initialService, initialEstimate]);
+  }, [isOpen, initialService]);
 
   if (!isOpen) return null;
   const update = (key: keyof FormState, value: string) => setForm((current) => ({ ...current, [key]: value }));
@@ -41,8 +40,9 @@ export default function BookingModal({ isOpen, onClose, initialService = "Genera
         method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...form, is_emergency: form.is_emergency === "yes" }),
       });
-      const payload = await response.json();
+      const payload = await response.json().catch(() => ({}));
       if (!response.ok) throw new Error(payload.error || "Unable to send request");
+      if (!payload?.request?.id) throw new Error("Request confirmation was missing. Please call Cody to confirm your request.");
       setRequestId(payload.request.id);
       setSubmitted(true);
       toast.success("Service request sent to Cody's Plumbing.");
@@ -56,7 +56,7 @@ export default function BookingModal({ isOpen, onClose, initialService = "Genera
   const labelClass = "mb-1 block text-xs font-bold uppercase tracking-wider text-slate-400";
 
   return <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-md">
-    <div className="relative max-h-[92vh] w-full max-w-xl overflow-y-auto rounded-2xl border-2 border-cyan-500/40 bg-slate-950 p-6 text-slate-100 shadow-2xl md:p-8">
+    <div role="dialog" aria-modal="true" aria-label="Request plumbing service" className="relative max-h-[92vh] w-full max-w-xl overflow-y-auto rounded-2xl border-2 border-cyan-500/40 bg-slate-950 p-6 text-slate-100 shadow-2xl md:p-8">
       <button onClick={close} aria-label="Close" className="absolute right-4 top-4 rounded-full border border-slate-700 bg-slate-900 p-2 text-slate-400 hover:text-white"><X className="h-5 w-5" /></button>
       {!submitted ? <>
         <div className="mb-6"><div className="mb-2 inline-flex items-center gap-1.5 rounded border border-cyan-500/30 bg-cyan-950 px-2.5 py-1 text-xs font-bold uppercase tracking-wider text-cyan-300"><Wrench className="h-3.5 w-3.5" />Real Service Request</div><h3 className="font-heading text-2xl font-black text-white">Request a <span className="text-cyan-400">Plumber</span></h3><p className="mt-1 text-xs text-slate-400">Your request is saved securely and sent to Cody's Plumbing dispatch. Licensed AZ ROC #{COMPANY.rocPrimary}.</p></div>
