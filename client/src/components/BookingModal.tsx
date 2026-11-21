@@ -16,11 +16,11 @@ type FormState = {
 };
 
 const emptyForm: FormState = {
-  name: "", phone: "", address: "", city: "Kingman", service_type: "24/7 Emergency / General Plumbing",
+  name: "", phone: "", address: "", city: "Kingman", service_type: "General Plumbing / Emergency Request",
   description: "", is_emergency: "no", preferred_time: "As soon as possible",
 };
 
-export default function BookingModal({ isOpen, onClose, initialService = "24/7 Emergency / General Plumbing", initialEstimate = "" }: BookingModalProps) {
+export default function BookingModal({ isOpen, onClose, initialService = "General Plumbing / Emergency Request", initialEstimate = "" }: BookingModalProps) {
   const [form, setForm] = useState<FormState>({ ...emptyForm, service_type: initialService, description: initialEstimate ? `Budgeting range requested: ${initialEstimate}` : "" });
   const [submitted, setSubmitted] = useState(false);
   const [requestId, setRequestId] = useState("");
