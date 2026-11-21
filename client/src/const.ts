@@ -9,7 +9,7 @@ export const COMPANY = {
   rocPrimary: "338378",
   rocClassification: "CR-37 Plumbing (Commercial & Residential)",
   rocStatus: "Active",
-  rocVerifyUrl: "https://checkcontractorlicense.com/az/plumbing-contractors/kingman/",
+  rocVerifyUrl: "https://roc.az.gov/",
   hours: "Monday–Friday, 9 AM–5 PM; after-hours emergencies by availability",
   officeHours: "Monday–Friday: 9:00 AM–5:00 PM | After-hours emergencies subject to availability",
   logoUrl: "/assets/codys-plumbing-logo.webp",
@@ -42,7 +42,7 @@ export const SERVICES = [
   {
     id: "water-filtration",
     title: "Water Filtration & Softeners",
-    shortDesc: "Tame harsh Arizona hard water with commercial-grade water softeners and multi-stage reverse osmosis.",
+    shortDesc: "Water softener and reverse osmosis filtration installation for Kingman and Mohave County homes and businesses.",
     image: COMPANY.images.waterFiltration,
     badge: "Mohave County Specialty",
     features: [
@@ -70,14 +70,14 @@ export const SERVICES = [
   {
     id: "commercial-plumbing",
     title: "Commercial & Industrial Systems",
-    shortDesc: "Full-scale commercial plumbing, RPZ backflow preventers, tenant improvements, and restaurant grease interceptors.",
+    shortDesc: "Commercial plumbing repairs, installations, and maintenance for businesses and properties across Mohave County.",
     image: COMPANY.images.commercial,
     badge: "ROC #338378 Commercial",
     features: [
       "Backflow prevention service inquiries",
       "Commercial hydro-jetting & heavy grease trap plumbing",
       "Multi-unit apartment and retail tenant plumbing",
-      "Code compliance and city permit processing"
+      "Discuss permit requirements for planned projects"
     ],
     pricingGuide: "Commercial contract bidding & scheduled maintenance"
   },
@@ -90,7 +90,7 @@ export const SERVICES = [
     features: [
       "Drain and sewer line blockage assessment",
       "Tough tree root cutting and scale scouring",
-      "Trenchless pipe lining and spot sewer line repairs",
+      "Discuss sewer line repair options after assessment",
       "Main line clearing and blockage removal"
     ],
     pricingGuide: "Call for drain cleaning pricing"
@@ -98,7 +98,7 @@ export const SERVICES = [
   {
     id: "repiping-fixtures",
     title: "Repiping, Sinks, Fixtures & Toilets",
-    shortDesc: "Complete copper and Uponor PEX re-piping, garbage disposals, luxury faucet installs, and slab leak detection.",
+    shortDesc: "Copper and PEX repiping, leak repairs, garbage disposals, sinks, faucets, and toilet installations.",
     image: "/assets/repiping-project.jpg",
     badge: "Licensed & Bonded",
     features: [
@@ -112,11 +112,11 @@ export const SERVICES = [
 ];
 
 export const SERVICE_CITIES = [
-  { name: "Kingman", zip: "86401, 86409", type: "Headquarters & Rapid Dispatch" },
-  { name: "Lake Havasu City", zip: "86403, 86404, 86406", type: "Full Service & Water Filtration Hub" },
-  { name: "Bullhead City", zip: "86429, 86442", type: "Commercial & Residential Dispatch" },
-  { name: "Fort Mohave", zip: "86426", type: "Residential & Emergency Service" },
-  { name: "Golden Valley", zip: "86413", type: "Full Service Route" },
+  { name: "Kingman", zip: "86401, 86409", type: "Kingman service area" },
+  { name: "Lake Havasu City", zip: "86403, 86404, 86406", type: "Plumbing service area" },
+  { name: "Bullhead City", zip: "86429, 86442", type: "Plumbing service area" },
+  { name: "Fort Mohave", zip: "86426", type: "Plumbing service area" },
+  { name: "Golden Valley", zip: "86413", type: "Plumbing service area" },
   { name: "Mohave Valley", zip: "86440", type: "Full Service Route" }
 ];
 
