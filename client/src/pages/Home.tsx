@@ -126,7 +126,7 @@ export default function Home() {
             <div>
               <p className="text-xs font-bold uppercase tracking-widest text-cyan-400">Local, licensed & trusted</p>
               <h2 className="mt-2 text-2xl font-black font-heading">Built for Mohave County</h2>
-              <p className="mt-1 text-sm text-slate-400">AZ ROC #{COMPANY.rocPrimary} · Commercial & residential plumbing · ROC #{COMPANY.rocSecondary} water systems</p>
+              <p className="mt-1 text-sm text-slate-400">AZ ROC #{COMPANY.rocPrimary} · Commercial & residential plumbing</p>
             </div>
             <button onClick={() => setBookingOpen(true)} className="rounded-lg bg-cyan-500 px-5 py-3 text-sm font-black text-slate-950 hover:bg-cyan-400">
               Request a local quote
