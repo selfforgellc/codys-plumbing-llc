@@ -16,7 +16,7 @@ const business = {
   "@context": "https://schema.org", "@type": "Plumber", "@id": `${origin}/#business`,
   name: COMPANY.name, url: `${origin}/`, telephone: "+1-928-303-3589",
   image: `${origin}${COMPANY.images.hero}`, logo: `${origin}${COMPANY.logoUrl}`,
-  address: { "@type": "PostalAddress", streetAddress: "2470 E Neal Ave", addressLocality: "Kingman", addressRegion: "AZ", postalCode: "86409", addressCountry: "US" },
+  address: { "@type": "PostalAddress", addressLocality: "Kingman", addressRegion: "AZ", addressCountry: "US" },
   areaServed: [...areas, { "@type": "AdministrativeArea", name: "Mohave County, Arizona" }],
   contactPoint: { "@type": "ContactPoint", telephone: "+1-928-303-3589", contactType: "customer service", areaServed: "Mohave County, Arizona", availableLanguage: "English" },
   hasOfferCatalog: { "@type": "OfferCatalog", name: "Plumbing services", itemListElement: SERVICES.map((service) => ({ "@type": "Offer", itemOffered: { "@type": "Service", name: service.title, url: `${origin}${pathFor(service.id)}` } })) },
