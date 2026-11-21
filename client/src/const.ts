@@ -4,7 +4,7 @@ export const COMPANY = {
   phone: "(928) 303-3589",
   phoneRaw: "9283033589",
   emergencyPhone: "(928) 303-3589",
-  address: "2470 E Neal Ave, Kingman, AZ 86409",
+  address: "Kingman, Arizona",
   serviceArea: "Kingman, Lake Havasu City, Bullhead City, Fort Mohave & Mohave County, AZ",
   rocPrimary: "338378",
   rocClassification: "CR-37 Plumbing (Commercial & Residential)",
