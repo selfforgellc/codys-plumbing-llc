@@ -11,8 +11,8 @@ export const COMPANY = {
   rocClassification: "CR-37 Plumbing (Commercial & Residential)",
   rocStatus: "Active & Verified",
   rocVerifyUrl: "https://checkcontractorlicense.com/az/plumbing-contractors/kingman/",
-  hours: "24 Hours / 7 Days a Week Emergency Service",
-  officeHours: "Monday – Friday: 7:00 AM – 6:00 PM | Sat: 8:00 AM – 2:00 PM | 24/7 Rapid Response",
+  hours: "Monday–Friday, 9 AM–5 PM; after-hours emergencies by availability",
+  officeHours: "Monday–Friday: 9:00 AM–5:00 PM | After-hours emergencies subject to availability",
   logoUrl: "/assets/codys-plumbing-logo.webp",
   iconUrl: "/assets/codys-icon-512.png",
   images: {
@@ -28,17 +28,17 @@ export const COMPANY = {
 export const SERVICES = [
   {
     id: "emergency-repairs",
-    title: "24/7 Emergency Plumbing",
-    shortDesc: "Burst pipes, active floods, sewer backups, and urgent gas leaks dispatched immediately.",
+    title: "Emergency Plumbing Repairs",
+    shortDesc: "Urgent plumbing repairs for burst pipes, water leaks, and sewer backups; after-hours response based on availability.",
     image: COMPANY.images.pipeRepair,
-    badge: "24/7 Rapid Response",
+    badge: "Emergency Service Available",
     features: [
-      "Average Kingman/Havasu arrival under 45 mins",
-      "Immediate mainline water shut-off & damage mitigation",
-      "High-pressure leak diagnostic cameras",
-      "No overtime surge surprises on diagnostics"
+      "Call to confirm response time and availability",
+      "Water shut-off guidance and leak repairs",
+      "Leak and plumbing problem assessment",
+      "Discuss service fees before scheduling"
     ],
-    pricingGuide: "Starting from $185 diagnostic & dispatch"
+    pricingGuide: "Call for current service pricing"
   },
   {
     id: "water-filtration",
@@ -50,23 +50,23 @@ export const SERVICES = [
       "Custom multi-stage Whole-House Softener systems",
       "Under-sink 5-stage Reverse Osmosis (RO) drinking systems",
       "Scale prevention for water heaters & high-end fixtures",
-      "Free in-home water hardness & purity testing"
+      "Water treatment options discussed during consultation"
     ],
-    pricingGuide: "RO systems from $495 • Softeners from $1,250"
+    pricingGuide: "Call for current installation pricing"
   },
   {
     id: "water-heaters",
     title: "Tank & Tankless Water Heaters",
-    shortDesc: "Same-day installation, rapid replacement, burner repair, and power flushing for all major brands.",
+    shortDesc: "Water heater troubleshooting, repairs, replacement, and tankless installation subject to scheduling.",
     image: COMPANY.images.waterHeater,
-    badge: "Same-Day Replacement",
+    badge: "Water Heater Service",
     features: [
-      "Rinnai, Navien, Bradford White & Rheem certified",
+      "Service for a range of tank and tankless water heater models",
       "High-efficiency Tankless conversions for endless hot water",
       "Safe gas line and thermal expansion valve upgrades",
-      "Old unit removal and disposal included"
+      "Discuss removal and disposal when requesting a quote"
     ],
-    pricingGuide: "Standard repairs from $175 • New tanks from $1,450"
+    pricingGuide: "Call for current repair and replacement quotes"
   },
   {
     id: "commercial-plumbing",
@@ -75,7 +75,7 @@ export const SERVICES = [
     image: COMPANY.images.commercial,
     badge: "ROC #338378 Commercial",
     features: [
-      "Backflow prevention testing, rebuilds & certifications",
+      "Backflow prevention service inquiries",
       "Commercial hydro-jetting & heavy grease trap plumbing",
       "Multi-unit apartment and retail tenant plumbing",
       "Code compliance and city permit processing"
@@ -94,7 +94,7 @@ export const SERVICES = [
       "Trenchless pipe lining and spot sewer line repairs",
       "Main line clearing and blockage removal"
     ],
-    pricingGuide: "Drain clearing specials starting at $99"
+    pricingGuide: "Call for drain cleaning pricing"
   },
   {
     id: "repiping-fixtures",
@@ -103,12 +103,12 @@ export const SERVICES = [
     image: "/assets/repiping-project.jpg",
     badge: "Licensed & Bonded",
     features: [
-      "Durable Uponor PEX repipes with lifetime material warranty",
-      "Precision acoustic and thermal slab leak pinpointing",
+      "Copper and PEX repiping options",
+      "Assessment of suspected hidden plumbing leaks",
       "High-output quiet garbage disposal installations",
       "Low-flow commercial and residential luxury fixtures"
     ],
-    pricingGuide: "Fixture installs from $145"
+    pricingGuide: "Call for fixture installation pricing"
   }
 ];
 
@@ -121,33 +121,4 @@ export const SERVICE_CITIES = [
   { name: "Mohave Valley", zip: "86440", type: "Full Service Route" }
 ];
 
-export const TESTIMONIALS = [
-  {
-    name: "Marcus Sterling",
-    location: "Kingman, AZ",
-    service: "Emergency Slab Leak Repair",
-    rating: 5,
-    text: "Cody's Plumbing is the real deal. Woke up on a Sunday morning with hot water pooling near the hallway baseboard. They had a technician at my house in 35 minutes with acoustic listening gear, found the slab leak, bypassed the damaged line, and saved our hardwood floors. Best plumbing experience in Mohave County!"
-  },
-  {
-    name: "Elena Rostova",
-    location: "Lake Havasu City, AZ",
-    service: "Whole-Home Water Softener & RO",
-    rating: 5,
-    text: "Our tap water was destroying our faucets and leaving white crust everywhere. Cody's installed a commercial-grade water softener and reverse osmosis drinking station. The water tastes incredible now and no more lime buildup! Licensed ROC contractor you can genuinely trust."
-  },
-  {
-    name: "Dave Henderson",
-    location: "Bullhead City, AZ (Commercial)",
-    service: "Restaurant Backflow & Grease Line",
-    rating: 5,
-    text: "I manage two dining establishments in the tri-state area. Cody's handles our annual backflow preventer certifications and commercial hydrojetting. They show up on schedule, provide certified documentation for the city, and keep us code compliant. ROC #338378 gives total peace of mind."
-  },
-  {
-    name: "Patricia Miller",
-    location: "Golden Valley, AZ",
-    service: "Tankless Water Heater Installation",
-    rating: 5,
-    text: "Replaced our old 50-gallon tank with a modern Rinnai tankless unit. The installation is a work of art—straight copper pipes, secure gas fitting, clean electrical conduit. Friendly, polite, and left the utility closet cleaner than they found it!"
-  }
-];
+export const TESTIMONIALS: { name: string; location: string; service: string; rating: number; text: string }[] = [];
