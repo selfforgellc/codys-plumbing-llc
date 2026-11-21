@@ -49,7 +49,7 @@ export default function Home() {
               <div>
                 <div className="inline-flex items-center gap-2 rounded-full border border-cyan-400/40 bg-cyan-950/70 px-3 py-1.5 text-[10px] sm:text-xs font-bold uppercase tracking-wide text-cyan-300">
                   <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
-                  24/7 Emergency Service · ROC #{COMPANY.rocPrimary}
+                  Emergency Service Available · ROC #{COMPANY.rocPrimary}
                 </div>
                 <h1 className="mt-4 text-[clamp(1.9rem,8.5vw,2.5rem)] font-black leading-[1.12] font-heading sm:text-5xl md:text-7xl">
                   Plumbing done right.<br />
@@ -67,7 +67,7 @@ export default function Home() {
                   </button>
                 </div>
                 <div className="mt-5 flex flex-wrap gap-3 text-xs font-bold text-slate-300 md:mt-7 md:gap-4">
-                  <span><Clock className="mr-1 inline h-4 w-4 text-cyan-400" />24/7 Local Dispatch</span>
+                  <span><Clock className="mr-1 inline h-4 w-4 text-cyan-400" />After-Hours Emergencies</span>
                   <span><ShieldCheck className="mr-1 inline h-4 w-4 text-cyan-400" />Licensed & Bonded</span>
                   <span><CheckCircle2 className="mr-1 inline h-4 w-4 text-cyan-400" />Clear Quotes</span>
                 </div>
