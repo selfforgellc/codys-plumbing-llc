@@ -24,7 +24,8 @@ const business = {
 
 const searchTopics: Record<string, string[]> = {
   "emergency-repairs": ["Emergency plumber", "Burst pipe repair", "Water leak repair", "Sewer backup help"],
-  "water-filtration": ["Water softener installation", "Reverse osmosis systems", "Whole-house water filtration", "Hard water treatment"],
+  "water-filtration": ["Reverse osmosis systems", "Whole-house water filtration", "Water filter replacement", "Filtration system repair"],
+  "water-softeners": ["Water softener installation", "Water softener repair", "Water softener replacement", "Hard water treatment"],
   "water-heaters": ["Water heater repair", "Water heater replacement", "Tankless water heater installation", "No hot water troubleshooting"],
   "commercial-plumbing": ["Commercial plumber", "Business plumbing repairs", "Commercial water heaters", "Plumbing for property managers"],
   "drain-sewer": ["Drain cleaning", "Clogged drain repair", "Main sewer line clearing", "Toilet and sink drain clogs"],
@@ -39,9 +40,14 @@ const details: Record<string, { title: string; intro: string; guidance: string; 
     topics: ["Burst pipes and water leaks", "Sewer backups and urgent drain blockages", "Emergency plumbing for homes and businesses"],
   },
   "water-filtration": {
-    title: "Water Softeners & Water Filtration", intro: "Hard water can leave mineral deposits on fixtures and reduce the performance of household plumbing equipment. Cody's Plumbing installs water softeners and filtration systems for homes and businesses in Mohave County.",
-    guidance: "If you're comparing a whole-house water softener, reverse osmosis drinking water system or other filtration options, we can discuss your water conditions, available space and installation needs before recommending a system.",
-    topics: ["Whole-house water softeners", "Reverse osmosis drinking water systems", "Water filtration and hard-water scale concerns"],
+    title: "Water Filtration System Installation & Repair", intro: "Cody's Plumbing installs and services whole-house water filtration and reverse osmosis systems in Kingman and surrounding Arizona communities. Filtration options depend on your water quality, plumbing and household needs.",
+    guidance: "Whole-house filtration treats water entering the property, while an under-sink reverse osmosis system treats drinking water at a specific tap. We can discuss system selection, available space, maintenance and replacement of existing equipment. For hard-water mineral buildup, explore our water softener service as well.",
+    topics: ["Whole-house filtration installation and replacement", "Reverse osmosis drinking water systems", "Existing filtration system troubleshooting and repair"],
+  },
+  "water-softeners": {
+    title: "Water Softener Installation & Repair", intro: "Mineral buildup, spots on dishes and scale on plumbing fixtures can be signs of hard water. Cody's Plumbing installs, replaces and repairs water softeners in Kingman, Arizona and surrounding communities.",
+    guidance: "Water softening addresses hardness minerals; it is not the same as filtration for other water quality concerns. A plumber can assess your existing system, water conditions, available space and household water use to help determine the right repair or replacement. Contact us to discuss installation and service options.",
+    topics: ["New whole-house water softener installation", "Repair and replacement of existing softeners", "System selection and plumbing connections"],
   },
   "water-heaters": {
     title: "Water Heater Repair & Installation", intro: "No hot water, inconsistent temperatures or a leaking tank? Cody's Plumbing services tank and tankless water heaters in Kingman and surrounding Mohave County communities.",

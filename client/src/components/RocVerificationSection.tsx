@@ -54,9 +54,9 @@ export default function RocVerificationSection() {
                   <div className="text-emerald-400 text-[10px] font-semibold">Active thru May 31, 2028</div>
                 </div>
                 <div className="bg-slate-900/80 p-2.5 rounded-lg border border-slate-800">
-                  <div className="text-slate-400 text-[10px] uppercase font-bold">Secondary / Equipment</div>
-                  <div className="text-cyan-300 font-extrabold text-sm">ROC #{COMPANY.rocSecondary}</div>
-                  <div className="text-slate-400 text-[10px]">Water Treatment & Systems</div>
+                  <div className="text-slate-400 text-[10px] uppercase font-bold">Plumbing Specialty</div>
+                  <div className="text-cyan-300 font-extrabold text-sm">Water Treatment</div>
+                  <div className="text-slate-400 text-[10px]">Filtration & Softening Systems</div>
                 </div>
                 <div className="col-span-2 sm:col-span-1 bg-slate-900/80 p-2.5 rounded-lg border border-slate-800">
                   <div className="text-slate-400 text-[10px] uppercase font-bold">Bond & Insurance</div>

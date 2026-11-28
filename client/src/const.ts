@@ -41,17 +41,26 @@ export const SERVICES = [
   },
   {
     id: "water-filtration",
-    title: "Water Filtration & Softeners",
-    shortDesc: "Water softener and reverse osmosis filtration installation for Kingman and Mohave County homes and businesses.",
+    title: "Whole-House Water Filtration",
+    shortDesc: "Whole-house water filtration and reverse osmosis installation, repair and service in Kingman and Mohave County.",
     image: COMPANY.images.waterFiltration,
     badge: "Mohave County Specialty",
     features: [
-      "Custom multi-stage Whole-House Softener systems",
+      "Whole-house water filtration systems",
       "Under-sink 5-stage Reverse Osmosis (RO) drinking systems",
       "Scale prevention for water heaters & high-end fixtures",
       "Water treatment options discussed during consultation"
     ],
     pricingGuide: "Call for current installation pricing"
+  },
+  {
+    id: "water-softeners",
+    title: "Water Softener Installation & Repair",
+    shortDesc: "Water softener installation, replacement and repair for hard water in Kingman and nearby Arizona communities.",
+    image: COMPANY.images.waterFiltration,
+    badge: "Hard Water Solutions",
+    features: ["Whole-house water softener installation", "Existing softener troubleshooting and repair", "Replacement of worn-out systems", "System selection based on household needs"],
+    pricingGuide: "Call for a water softener quote"
   },
   {
     id: "water-heaters",
